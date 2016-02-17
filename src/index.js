@@ -2,6 +2,7 @@ import Promise from 'bluebird';
 import PG from 'pg';
 
 let pg = PG;
+let defaultConnection;
 
 export function driver(newDriver) {
   if (newDriver) {
@@ -12,7 +13,15 @@ export function driver(newDriver) {
   return pg;
 }
 
-export async function getClient(conString = pg.defaults) {
+export function setDefaultConnection(options) {
+  defaultConnection = options;
+}
+
+function getDefaultConnection() {
+  return defaultConnection || pg.defaults;
+}
+
+export async function getClient(conString = getDefaultConnection()) {
   return new Promise((resolve, reject) => {
     pg.connect(conString, (err, client, done) => {
       if (err) {
@@ -65,7 +74,7 @@ const makeAsyncApi = client => {
 export async function connect(conString, asyncFunc) {
   if (typeof asyncFunc === 'undefined') {
     asyncFunc = conString;
-    conString = pg.defaults;
+    conString = getDefaultConnection();
   }
 
   if (typeof asyncFunc !== 'function')
