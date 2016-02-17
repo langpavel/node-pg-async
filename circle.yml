@@ -1,0 +1,9 @@
+machine:
+  node:
+    version: 5.1.0
+  services:
+    - postgresql
+
+dependencies:
+  pre:
+    - npm install -g node-gyp
