@@ -1,0 +1,14 @@
+{
+  "presets": ["es2015-node5", "stage-1"],
+  "plugins": [
+    "add-module-exports"
+  ],
+  "env": {
+    "production": {
+      "plugins": [
+        "transform-react-constant-elements",
+        "transform-react-inline-elements"
+      ]
+    }
+  }
+}
