@@ -1,0 +1,4 @@
+coverage/
+.editorconfig
+.gitignore
+circle.yml

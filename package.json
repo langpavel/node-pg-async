@@ -1,8 +1,11 @@
 {
   "name": "pg-async",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "PostgreSQL client for node.js designed for usage with ES7 async/await based on node-postgres (pg) module",
   "main": "lib/index.js",
+  "files": {
+
+  },
   "scripts": {
     "test": "gulp test",
     "lint": "gulp eslint",
