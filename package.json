@@ -55,7 +55,7 @@
     "eslint-plugin-import": "^1.0.0-beta.0",
     "gulp": "^3.9.1",
     "gulp-babel": "^6.1.2",
-    "gulp-babel-istanbul": "^0.11.0",
+    "gulp-babel-istanbul": "^0.12.0",
     "gulp-eslint": "^2.0.0",
     "gulp-mocha": "^2.2.0",
     "mocha": "^2.4.5"
