@@ -1,4 +1,4 @@
-# pg-async [![Circle CI](https://circleci.com/gh/langpavel/node-pg-async.svg?style=shield)](https://circleci.com/gh/langpavel/node-pg-async)
+# pg-async [![Circle CI](https://circleci.com/gh/langpavel/node-pg-async.svg?style=shield)](https://circleci.com/gh/langpavel/node-pg-async) [![npm version](https://badge.fury.io/js/pg-async.svg)](https://badge.fury.io/js/pg-async) ![npm dependencies](https://david-dm.org/langpavel/node-pg-async.svg)
 
 Tiny but powerful Promise based PostgreSQL client for node.js
 designed for usage with ES7 async/await.<br/>
