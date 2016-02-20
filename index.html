@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/github-dark.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print">
+
+    <title>pg-async by langpavel</title>
+  </head>
+
+  <body>
+
+    <header>
+      <div class="container">
+        <h1>pg-async</h1>
+        <h2>PostgreSQL client for node.js designed for usage with ES7 async/await based on node-postgres</h2>
+
+        <section id="downloads">
+          <a href="https://github.com/langpavel/node-pg-async/zipball/master" class="btn">Download as .zip</a>
+          <a href="https://github.com/langpavel/node-pg-async/tarball/master" class="btn">Download as .tar.gz</a>
+          <a href="https://github.com/langpavel/node-pg-async" class="btn btn-github"><span class="icon"></span>View on GitHub</a>
+        </section>
+      </div>
+    </header>
+
+    <div class="container">
+      <section id="main_content">
+        <h1>
+<a id="pg-async" class="anchor" href="#pg-async" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>pg-async</h1>
+
+<p><a href="https://badge.fury.io/js/pg-async"><img src="https://badge.fury.io/js/pg-async.svg" alt="Npm Version"></a>
+<a href="https://david-dm.org/langpavel/node-pg-async"><img src="https://david-dm.org/langpavel/node-pg-async.svg" alt="Dependency Status"></a>
+<a href="https://david-dm.org/langpavel/node-pg-async#info=devDependencies"><img src="https://david-dm.org/langpavel/node-pg-async/dev-status.svg" alt="devDependency Status"></a>
+<a href="https://circleci.com/gh/langpavel/node-pg-async"><img src="https://circleci.com/gh/langpavel/node-pg-async.svg?style=shield" alt="Build Status"></a> 
+<a href="https://coveralls.io/github/langpavel/node-pg-async?branch=master"><img src="https://coveralls.io/repos/github/langpavel/node-pg-async/badge.svg?branch=master" alt="Coverage Status"></a></p>
+
+<p>Tiny but powerful Promise based PostgreSQL client for node.js
+designed for easy use with ES7 async/await.<br>
+Based on <a href="https://github.com/brianc/node-postgres">node-postgres</a> (known as <code>pg</code>).
+Can use pure JavaScript or native <code>pg</code> backend.</p>
+
+<h2>
+<a id="install" class="anchor" href="#install" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Install</h2>
+
+<pre><code>$ npm install --save pg-async
+</code></pre>
+
+<h2>
+<a id="api" class="anchor" href="#api" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>API</h2>
+
+<h4>
+<a id="querysql-values-connectionoptions-promise---pgresult" class="anchor" href="#querysql-values-connectionoptions-promise---pgresult" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a><code>query(sql, [values], [connectionOptions]): Promise -&gt; pg.Result</code>
+</h4>
+
+<ul>
+<li>Execute SQL and return <code>Result</code> object from underlying <code>pg</code> library</li>
+</ul>
+
+<hr>
+
+<h4>
+<a id="rowssql-values-connectionoptions-promise---array-of-objects" class="anchor" href="#rowssql-values-connectionoptions-promise---array-of-objects" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a><code>rows(sql, [values], [connectionOptions]): Promise -&gt; array of objects</code>
+</h4>
+
+<ul>
+<li>Execute SQL and return array of key/value objects (<code>result.rows</code>)</li>
+</ul>
+
+<hr>
+
+<h4>
+<a id="rowsql-values-connectionoptions-promise---object" class="anchor" href="#rowsql-values-connectionoptions-promise---object" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a><code>row(sql, [values], [connectionOptions]): Promise -&gt; object</code>
+</h4>
+
+<ul>
+<li>Execute SQL and return single key/value object.
+If query yields more than one or none rows, promise will be rejected.</li>
+<li>Rejected promise throw exception at <strong><code>await</code></strong> location.</li>
+</ul>
+
+<hr>
+
+<h4>
+<a id="valuesql-values-connectionoptions-promise---any" class="anchor" href="#valuesql-values-connectionoptions-promise---any" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a><code>value(sql, [values], [connectionOptions]): Promise -&gt; any</code>
+</h4>
+
+<ul>
+<li>Same as row, but query must yields single column in single row, otherwise throws.</li>
+</ul>
+
+<hr>
+
+<h4>
+<a id="connectconstring-asyncfunc-promise" class="anchor" href="#connectconstring-asyncfunc-promise" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a><code>connect([conString], asyncFunc): Promise</code>
+</h4>
+
+<ul>
+<li>Execute multiple queries in sequence on same connection. This is handy for transactions.</li>
+<li>
+<code>asyncFunc</code> here has signature <code>async (client, pgClient) =&gt; { ... }</code>
+</li>
+<li>provided <code>client</code> has async methods <code>query</code>, <code>rows</code>, <code>row</code> and <code>value</code>.</li>
+<li>
+<code>client</code> itself is shorthand for <code>query</code>
+</li>
+</ul>
+
+<p><strong>Example:</strong></p>
+
+<div class="highlight highlight-source-js"><pre><span class="pl-k">function</span> <span class="pl-en">transaction</span>(<span class="pl-smi">fromAccount</span>, <span class="pl-smi">toAccount</span>, <span class="pl-smi">amount</span>) {
+  <span class="pl-k">return</span> <span class="pl-en">connect</span>(<span class="pl-k">async</span> (<span class="pl-smi">c</span>) <span class="pl-k">=&gt;</span> {
+    <span class="pl-k">await</span> <span class="pl-en">c</span>(<span class="pl-s"><span class="pl-pds">'</span>BEGIN<span class="pl-pds">'</span></span>);
+    <span class="pl-k">let</span> movementFrom, movementTo, movementId;
+    <span class="pl-k">try</span> {
+      <span class="pl-k">const</span> <span class="pl-c1">sql</span> <span class="pl-k">=</span> <span class="pl-s"><span class="pl-pds">'</span>INSERT INTO bank_account (account, amount) VALUES ($1, $2) RETURNS id<span class="pl-pds">'</span></span>;
+      movementFrom <span class="pl-k">=</span> <span class="pl-k">await</span> <span class="pl-smi">c</span>.<span class="pl-c1">value</span>(sql, [fromAccount, <span class="pl-k">-</span>amount]);
+      movementTo <span class="pl-k">=</span> <span class="pl-k">await</span> <span class="pl-smi">c</span>.<span class="pl-c1">value</span>(sql, [toAccount, amount]);
+      movementId <span class="pl-k">=</span> <span class="pl-k">await</span> <span class="pl-en">c</span>(
+        <span class="pl-s"><span class="pl-pds">'</span>INSERT INTO movement (from, to, amount) VALUES ($1, $2, $3) RETURNS id<span class="pl-pds">'</span></span>,
+        [movementFrom, movementTo, amount]);
+      <span class="pl-k">await</span> <span class="pl-en">c</span>(<span class="pl-s"><span class="pl-pds">'</span>COMMIT<span class="pl-pds">'</span></span>);
+    } <span class="pl-k">catch</span> (err) {
+      <span class="pl-k">await</span> <span class="pl-en">c</span>(<span class="pl-s"><span class="pl-pds">'</span>ROLLBACK<span class="pl-pds">'</span></span>);
+    }
+  });
+}</pre></div>
+
+<hr>
+
+<h4>
+<a id="setdefaultconnectiondefaults" class="anchor" href="#setdefaultconnectiondefaults" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a><code>setDefaultConnection(defaults)</code>
+</h4>
+
+<ul>
+<li>This parameters are used as defaults if no <code>connectionOptions</code> are provided to methods above.</li>
+<li>Note that this and <code>pg.defaults</code> are separate objcts/strings.
+Resolution of connection options can be described as:<br>
+<strong><code>connectionOptions</code></strong>(provided to function)
+<strong><code>|| pg-async.defaultConnection || pg.defaults</code></strong>
+</li>
+<li>See <a href="https://github.com/brianc/node-postgres/wiki/pg#pgdefaults"><code>pg.defaults</code></a>
+for more.</li>
+</ul>
+
+<hr>
+
+<h4>
+<a id="driver--returns-used-pg-instancedriverpg--set-pg-instance" class="anchor" href="#driver--returns-used-pg-instancedriverpg--set-pg-instance" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a><code>driver()</code> — returns used <code>pg</code> instance<br><code>driver(pg)</code> — set <code>pg</code> instance</h4>
+
+<ul>
+<li>To install the <a href="https://github.com/brianc/node-pg-native.git">native bindings</a>:</li>
+</ul>
+
+<div class="highlight highlight-source-shell"><pre>$ npm install --save pg pg-native</pre></div>
+
+<p>then you can call <code>driver(require('pg').native)</code></p>
+
+<hr>
+
+<h3>
+<a id="getclientconnectionoptions-promise---client-done" class="anchor" href="#getclientconnectionoptions-promise---client-done" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a><code>getClient([connectionOptions]): Promise -&gt; {client, done}</code>
+</h3>
+
+<ul>
+<li>Get unwrapped <code>pg.Client</code> callback based instance.<br>
+You should not call this method unless you know what are you doing.</li>
+<li>Client must be returned to pool manually by calling <code>done()</code>
+</li>
+</ul>
+
+<hr>
+
+<h4>
+<a id="closeconnections" class="anchor" href="#closeconnections" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>closeConnections()</h4>
+
+<ul>
+<li>Disconnects all idle clients within all active pools, and has all client pools terminate.
+See <a href="https://github.com/brianc/node-postgres/wiki/pg#end"><code>pg.end()</code></a>
+</li>
+</ul>
+
+<hr>
+
+<h2>
+<a id="features" class="anchor" href="#features" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Features</h2>
+
+<p>If you miss something, don't be shy, just
+<a href="https://github.com/langpavel/node-pg-async/issues">open new issue!</a>
+It will be nice if you label your issue with prefix <code>[bug]</code> <code>[doc]</code> <code>[question]</code> <code>[typo]</code>
+etc.</p>
+
+<h2>
+<a id="license-mit" class="anchor" href="#license-mit" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>License (MIT)</h2>
+
+<p>Copyright (c) 2016 Pavel Lang (<a href="mailto:langpavel@phpskelet.org">langpavel@phpskelet.org</a>)</p>
+
+<p>
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:</p>
+
+<p>The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.</p>
+
+<p>THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+</p>
+      </section>
+    </div>
+
+    
+  </body>
+</html>
