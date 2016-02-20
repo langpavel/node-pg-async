@@ -13,7 +13,7 @@ function testWithDriver(driverName, driver) {
     });
 
     after(() => {
-      driver.end();
+      pg.closeConnections();
     });
 
     it('should fail if cannot connect', async () => {
