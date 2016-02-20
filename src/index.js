@@ -1,11 +1,28 @@
+import debugLib from 'debug';
 import Promise from 'bluebird';
 import PG from 'pg';
+
+const debug = debugLib('pg-async');
 
 let pg = PG;
 let defaultConnection;
 
 export function driver(newDriver) {
   if (newDriver) {
+    /* istanbul ignore next */
+    if (debug.enabled) {
+      let driverName;
+      if (typeof newDriver.driverName === 'string')
+        driverName = newDriver.driverName;
+      else if (newDriver === PG)
+        driverName = 'pg';
+      else try {
+        driverName = newDriver === PG.native ? 'pg.native' : 'unknown';
+      } catch (_) {
+        driverName = 'unknown';
+      }
+      debug('new driver set: %s', driverName);
+    }
     const tmp = pg;
     pg = newDriver;
     return tmp;
@@ -15,6 +32,7 @@ export function driver(newDriver) {
 
 export function setDefaultConnection(options) {
   defaultConnection = options;
+  debug('defaultConnection: ', getDefaultConnection());
 }
 
 function getDefaultConnection() {
@@ -25,6 +43,7 @@ export async function getClient(conString = getDefaultConnection()) {
   return new Promise((resolve, reject) => {
     pg.connect(conString, (err, client, done) => {
       if (err) {
+        debug('%s getClient(%j)', err, getDefaultConnection());
         if (done) done(err);
         return reject(err);
       }
@@ -40,9 +59,13 @@ const makeAsyncApi = client => {
 
   query.query = (sql, values) =>
     new Promise((resolve, reject) => {
+      debug('query params: %j query: %j', values, sql);
       client.query(sql, values, (err, result) => {
-        if (err)
+        if (err) {
+          debug('%s query(%j, %j)', err, sql, values);
           return reject(err);
+        }
+        debug('query ok: %d rows', result.rowCount);
         return resolve(result);
       });
     });

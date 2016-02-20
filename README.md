@@ -98,7 +98,7 @@ then you can call `driver(require('pg').native)`
 
 ---
 
-### `getClient([connectionOptions]): Promise -> {client, done}`
+#### `getClient([connectionOptions]): Promise -> {client, done}`
 
 * Get unwrapped `pg.Client` callback based instance.<br/>
   You should not call this method unless you know what are you doing.
@@ -114,6 +114,12 @@ then you can call `driver(require('pg').native)`
 ---
 
 ## Features
+
+ * [x] `pg` driver support
+ * [x] `pg.native` driver support
+ * [x] [`debug`](https://github.com/visionmedia/debug#readme) — Enable debugging with `DEBUG="pg-async"` environment variable
+ * [ ] Transaction API wrapper
+ * [ ] Cursor API wrapper
 
 If you miss something, don't be shy, just
 [open new issue!](https://github.com/langpavel/node-pg-async/issues)

@@ -37,6 +37,7 @@
   },
   "homepage": "https://github.com/langpavel/node-pg-async#readme",
   "dependencies": {
+    "debug": "^2.2.0",
     "pg": "^4.4.6"
   },
   "devDependencies": {
