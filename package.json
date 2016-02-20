@@ -3,9 +3,7 @@
   "version": "1.0.2",
   "description": "PostgreSQL client for node.js designed for usage with ES7 async/await based on node-postgres (pg) module",
   "main": "lib/index.js",
-  "files": {
-
-  },
+  "files": {},
   "scripts": {
     "test": "gulp test",
     "lint": "gulp eslint",
@@ -58,6 +56,7 @@
     "gulp-babel-istanbul": "^0.12.0",
     "gulp-eslint": "^2.0.0",
     "gulp-mocha": "^2.2.0",
-    "mocha": "^2.4.5"
+    "mocha": "^2.4.5",
+    "pg-native": "^1.10.0"
   }
 }
