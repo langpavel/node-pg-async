@@ -36,7 +36,7 @@ gulp.task('test', ['eslint'], (done) => {
 });
 
 gulp.task('build', ['test'], () => {
-  gulp.src('src/index.js')
+  gulp.src('src/*.js')
     .pipe(babel())
     .pipe(gulp.dest('lib'));
 });

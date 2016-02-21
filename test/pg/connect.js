@@ -1,5 +1,5 @@
 import {expect} from 'chai';
-import * as pg from '../../src/index';
+import Pg from '../../src/index';
 
 const SELECT = {
   row: 'select 1 as id, 2 as value',
@@ -14,9 +14,11 @@ testWithDriver('pg.native', require('pg').native);
 function testWithDriver(driverName, driver) {
   describe(`pg-async connect (with ${driverName} driver)`, () => {
 
+    let pg, pgInvalid;
+
     beforeEach(() => {
-      pg.driver(driver);
-      pg.setDefaultConnection(null);
+      pg = new Pg(null, driver);
+      pgInvalid = new Pg('INVALID', driver);
     });
 
     after(() => {
@@ -25,16 +27,7 @@ function testWithDriver(driverName, driver) {
 
     it('should fail if invalid connection conf', async () => {
       try {
-        await pg.connect('INVALID', async () => null);
-      } catch (err) {
-        expect(err).to.be.instanceOf(Error);
-      }
-    });
-
-    it('should fail if invalid default connection', async () => {
-      pg.setDefaultConnection('INVALID');
-      try {
-        await pg.connect('INVALID', async () => null);
+        await pgInvalid(async () => null);
       } catch (err) {
         expect(err).to.be.instanceOf(Error);
       }
@@ -115,6 +108,24 @@ function testWithDriver(driverName, driver) {
         });
       });
 
+      it('query.row works with arguments', async () => {
+        await pg.connect(async (q) => {
+          const result = await q.row('select $1::int as i, $2::text as t', 123, 'abc');
+          expect(result).to.be.a('object');
+          expect(result.i).equal(123);
+          expect(result.t).equal('abc');
+        });
+      });
+
+      it('query.rowArgs works with arguments', async () => {
+        await pg.connect(async (q) => {
+          const result = await q.rowArgs('select $1::int as i, $2::text as t', [123, 'abc']);
+          expect(result).to.be.a('object');
+          expect(result.i).equal(123);
+          expect(result.t).equal('abc');
+        });
+      });
+
       it('query.row works', async () => {
         await pg.connect(async (q) => {
 
@@ -182,6 +193,14 @@ function testWithDriver(driverName, driver) {
         expect(rows).to.have.length(2);
         const none = await pg.rows(SELECT.empty);
         expect(none).to.have.length(0);
+      });
+
+      it('value ovverides custom query config correctly', async () => {
+        const value = await pg.value({
+          text: 'SELECT 123',
+          rowMode: 'object'
+        });
+        expect(value).equal(123);
       });
 
     });

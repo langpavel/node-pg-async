@@ -7,8 +7,8 @@
 
 Tiny but powerful Promise based PostgreSQL client for node.js
 designed for easy use with ES7 async/await.<br/>
-Based on [node-postgres](https://github.com/brianc/node-postgres) (known as `pg`).
-Can use pure JavaScript or native `pg` backend.
+Based on [node-postgres](https://github.com/brianc/node-postgres) (known as `pg` in npm registry).
+Can use `pg` or native `pg-native` backend.
 
 ## Install
 
@@ -18,19 +18,64 @@ $ npm install --save pg-async
 
 ## API
 
-#### `query(sql, [values], [connectionOptions]): Promise -> pg.Result`
+#### Configuring Connection Options
+```js
+new PgAsync([connectionOptions], [driver])
+```
 
-* Execute SQL and return `Result` object from underlying `pg` library
+* The only export of `pg-async` is `PgAsync` class which let you configure connection options
+* Connection options defaults to [`pg.defaults`](https://github.com/brianc/node-postgres/wiki/pg#pgdefaults)
+* Optional `driver` let you choose underlying library
+* To use the [native bindings](https://github.com/brianc/node-pg-native.git) you must `npm install --save pg-native`
+
+```js
+import PgAsync from 'pg-async';
+
+// using default connection
+const pgAsync = new PgAsync();
+
+// using connection string
+const pgAsync = new PgAsync('postgres://user:secret@host:port/database');
+
+// using connection object
+const pgAsync = new PgAsync({user, password, host, port, database, ...});
+
+// using default for current user, with native driver
+// install pg-native package manually
+const pgAsync = new PgAsync(null, 'native');
+const pgAsync = new PgAsync(null, require('pg').native);
+```
 
 ---
 
-#### `rows(sql, [values], [connectionOptions]): Promise -> array of objects`
+#### `await pgAsync.query(sql, values...) -> pg.Result`
+#### `await pgAsync.queryArgs(sql, [values]) -> pg.Result`
+
+* Execute SQL and return `Result` object from underlying `pg` library
+* Interesting properties on `Result` object are:
+  * `rowCount` Number ­– returned rows
+  * `oid` Number ­– Postgres oid
+  * `rows` Array ­– Actual result of `pgAsync.rows()`
+  * `rowAsArray` Boolean
+  * `fields` Array of:
+    * `name` String ­– name or alias of column
+    * `tableID` Number ­– oid of table or 0
+    * `columnID` Number ­– index of column in table or 0
+    * `dataTypeID` Number ­– oid of data type
+    * `dataTypeSize` Number ­– size in bytes od colum, -1 for variable length
+    * ­`dataTypeModifier` Number 
+
+---
+
+#### `await pgAsync.rows(sql, values...) -> array of objects`
+#### `await pgAsync.rowsArgs(sql, [values]) -> array of objects`
 
 * Execute SQL and return array of key/value objects (`result.rows`)
 
 ---
 
-#### `row(sql, [values], [connectionOptions]): Promise -> object`
+#### `await pgAsync.row(sql, values...) -> object`
+#### `await pgAsync.rowArgs(sql, [values]) -> object`
 
 * Execute SQL and return single key/value object.
   If query yields more than one or none rows, promise will be rejected.
@@ -38,67 +83,59 @@ $ npm install --save pg-async
 
 ---
 
-#### `value(sql, [values], [connectionOptions]): Promise -> any`
+#### `await pgAsync.value(sql, values...) -> any`
+#### `await pgAsync.valueArgs(sql, [values]) -> any`
 
 * Same as row, but query must yields single column in single row, otherwise throws.
 
 ---
 
-#### `connect([conString], asyncFunc): Promise`
+#### `await pgAsync.connect(async (client) => innerResult) -> innerResult`
 
 * Execute multiple queries in sequence on same connection. This is handy for transactions.
 * `asyncFunc` here has signature `async (client, pgClient) => { ... }`
-* provided `client` has async methods `query`, `rows`, `row` and `value`.
+* provided `client` has async methods:
+  * `query`, `rows`, `row`, `value` as above
+  * `queryArgs`, `rowsArgs`, `rowArgs`, `valueArgs` as above
+  * `startTransaction`, `commit`, `rollback` - start new transaction manually. Use `pgAsync.transaction` when possible
 * `client` itself is shorthand for `query`
 
+---
+
+#### `await pgAsync.transaction(async (client) => innerResult) -> innerResult`
+
+Transaction is similar to `connect` but automatically start and commit transaction,
+rollback on throwen error
 __Example:__
 
 ```js
-function transaction(fromAccount, toAccount, amount) {
-  return connect(async (c) => {
-    await c('BEGIN');
+const pgAsync = new PgAsync();
+
+function moveMoney(fromAccount, toAccount, amount) {
+  return pgAsync.transaction(async (client) => {
     let movementFrom, movementTo, movementId;
-    try {
-      const sql = 'INSERT INTO bank_account (account, amount) VALUES ($1, $2) RETURNS id';
-      movementFrom = await c.value(sql, [fromAccount, -amount]);
-      movementTo = await c.value(sql, [toAccount, amount]);
-      movementId = await c(
-        'INSERT INTO movement (from, to, amount) VALUES ($1, $2, $3) RETURNS id',
-        [movementFrom, movementTo, amount]);
-      await c('COMMIT');
-    } catch (err) {
-      await c('ROLLBACK');
-    }
+    const sql = 'INSERT INTO bank_account (account, amount) VALUES ($1, $2) RETURNS id';
+    movementFrom = await client.value(sql, [fromAccount, -amount]);
+    movementTo = await client.value(sql, [toAccount, amount]);
+    return {movementFrom, movementTo}
   });
+}
+
+async function doTheWork() {
+  ...
+  try {
+    const result = await moveMoney('alice', 'bob', 19.95);
+    // transaction is commited
+  } catch (err) {
+    // transaction is rollbacked
+  }
+  ...
 }
 ```
 
 ---
 
-#### `setDefaultConnection(defaults)`
-
-* This parameters are used as defaults if no `connectionOptions` are provided to methods above.
-* Note that this and `pg.defaults` are separate objcts/strings.
-  Resolution of connection options can be described as:<br/>
-  **`connectionOptions`**<small>(provided to function)</small>
-  **`|| pg-async.defaultConnection || pg.defaults`**
-* See [`pg.defaults`](https://github.com/brianc/node-postgres/wiki/pg#pgdefaults)
-  for more.
-
----
-
-#### `driver()` — returns used `pg` instance<br/>`driver(pg)` — set `pg` instance
-
-* To install the [native bindings](https://github.com/brianc/node-pg-native.git):
-
-```sh
-$ npm install --save pg pg-native
-```
-then you can call `driver(require('pg').native)`
-
----
-
-#### `getClient([connectionOptions]): Promise -> {client, done}`
+#### `await pgAsync.getClient([connectionOptions]) -> {client, done}`
 
 * Get unwrapped `pg.Client` callback based instance.<br/>
   You should not call this method unless you know what are you doing.
@@ -106,10 +143,11 @@ then you can call `driver(require('pg').native)`
 
 ---
 
-#### closeConnections()
+#### `pgAsync.closeConnections()`
 
 * Disconnects all idle clients within all active pools, and has all client pools terminate.
   See [`pg.end()`](https://github.com/brianc/node-postgres/wiki/pg#end)
+* This actually terminates all connections on driver used by Pg instance
 
 ---
 
@@ -118,7 +156,8 @@ then you can call `driver(require('pg').native)`
  * [x] `pg` driver support
  * [x] `pg.native` driver support
  * [x] [`debug`](https://github.com/visionmedia/debug#readme) — Enable debugging with `DEBUG="pg-async"` environment variable
- * [ ] Transaction API wrapper
+ * [x] Transaction API wrapper - Postgres does not support nested transactions
+ * [ ] Transaction `SAVEPOINT` support
  * [ ] Cursor API wrapper
 
 If you miss something, don't be shy, just

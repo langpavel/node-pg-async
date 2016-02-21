@@ -1,5 +1,5 @@
 import {expect} from 'chai';
-import * as pg from '../../src/index';
+import Pg from '../../src/index';
 
 testWithDriver('pg', require('pg'));
 testWithDriver('pg.native', require('pg').native);
@@ -7,9 +7,11 @@ testWithDriver('pg.native', require('pg').native);
 function testWithDriver(driverName, driver) {
   describe(`pg-async getClient (with ${driverName} driver)`, () => {
 
+    let pg, pgInvalid;
+
     beforeEach(() => {
-      pg.driver(driver);
-      pg.setDefaultConnection(null);
+      pg = new Pg(null, driver);
+      pgInvalid = new Pg('INVALID', driver);
     });
 
     after(() => {
@@ -18,7 +20,7 @@ function testWithDriver(driverName, driver) {
 
     it('should fail if cannot connect', async () => {
       try {
-        await pg.getClient('INVALID');
+        await pgInvalid.getClient();
       } catch (err) {
         expect(err).to.be.instanceOf(Error);
       }
