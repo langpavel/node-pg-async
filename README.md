@@ -114,7 +114,11 @@ const pgAsync = new PgAsync();
 function moveMoney(fromAccount, toAccount, amount) {
   return pgAsync.transaction(async (client) => {
     let movementFrom, movementTo, movementId;
-    const sql = 'INSERT INTO bank_account (account, amount) VALUES ($1, $2) RETURNS id';
+    const sql = `
+      INSERT INTO bank_account (account, amount)
+      VALUES ($1, $2)
+      RETURNS id
+    `;
     movementFrom = await client.value(sql, [fromAccount, -amount]);
     movementTo = await client.value(sql, [toAccount, amount]);
     return {movementFrom, movementTo}
@@ -122,14 +126,14 @@ function moveMoney(fromAccount, toAccount, amount) {
 }
 
 async function doTheWork() {
-  ...
+  // ...
   try {
     const result = await moveMoney('alice', 'bob', 19.95);
     // transaction is commited
   } catch (err) {
     // transaction is rollbacked
   }
-  ...
+  // ...
 }
 ```
 
