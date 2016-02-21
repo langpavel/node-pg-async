@@ -39,8 +39,8 @@
 
 <p>Tiny but powerful Promise based PostgreSQL client for node.js
 designed for easy use with ES7 async/await.<br>
-Based on <a href="https://github.com/brianc/node-postgres">node-postgres</a> (known as <code>pg</code>).
-Can use pure JavaScript or native <code>pg</code> backend.</p>
+Based on <a href="https://github.com/brianc/node-postgres">node-postgres</a> (known as <code>pg</code> in npm registry).
+Can use <code>pg</code> or native <code>pg-native</code> backend.</p>
 
 <h2>
 <a id="install" class="anchor" href="#install" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Install</h2>
@@ -52,17 +52,88 @@ Can use pure JavaScript or native <code>pg</code> backend.</p>
 <a id="api" class="anchor" href="#api" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>API</h2>
 
 <h4>
-<a id="querysql-values-connectionoptions-promise---pgresult" class="anchor" href="#querysql-values-connectionoptions-promise---pgresult" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a><code>query(sql, [values], [connectionOptions]): Promise -&gt; pg.Result</code>
+<a id="configuring-connection-options" class="anchor" href="#configuring-connection-options" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Configuring Connection Options</h4>
+
+<div class="highlight highlight-source-js"><pre><span class="pl-k">new</span> <span class="pl-en">PgAsync</span>([connectionOptions], [driver])</pre></div>
+
+<ul>
+<li>The only export of <code>pg-async</code> is <code>PgAsync</code> class which let you configure connection options</li>
+<li>Connection options defaults to <a href="https://github.com/brianc/node-postgres/wiki/pg#pgdefaults"><code>pg.defaults</code></a>
+</li>
+<li>Optional <code>driver</code> let you choose underlying library</li>
+<li>To use the <a href="https://github.com/brianc/node-pg-native.git">native bindings</a> you must <code>npm install --save pg-native</code>
+</li>
+</ul>
+
+<div class="highlight highlight-source-js"><pre><span class="pl-k">import</span> <span class="pl-smi">PgAsync</span> <span class="pl-k">from</span> <span class="pl-s"><span class="pl-pds">'</span>pg-async<span class="pl-pds">'</span></span>;
+
+<span class="pl-c">// using default connection</span>
+<span class="pl-k">const</span> <span class="pl-c1">pgAsync</span> <span class="pl-k">=</span> <span class="pl-k">new</span> <span class="pl-en">PgAsync</span>();
+
+<span class="pl-c">// using connection string</span>
+<span class="pl-k">const</span> <span class="pl-c1">pgAsync</span> <span class="pl-k">=</span> <span class="pl-k">new</span> <span class="pl-en">PgAsync</span>(<span class="pl-s"><span class="pl-pds">'</span>postgres://user:secret@host:port/database<span class="pl-pds">'</span></span>);
+
+<span class="pl-c">// using connection object</span>
+<span class="pl-k">const</span> <span class="pl-c1">pgAsync</span> <span class="pl-k">=</span> <span class="pl-k">new</span> <span class="pl-en">PgAsync</span>({user, password, host, port, database, <span class="pl-k">...</span>});
+
+<span class="pl-c">// using default for current user, with native driver</span>
+<span class="pl-c">// install pg-native package manually</span>
+<span class="pl-k">const</span> <span class="pl-c1">pgAsync</span> <span class="pl-k">=</span> <span class="pl-k">new</span> <span class="pl-en">PgAsync</span>(<span class="pl-c1">null</span>, <span class="pl-s"><span class="pl-pds">'</span>native<span class="pl-pds">'</span></span>);
+<span class="pl-k">const</span> <span class="pl-c1">pgAsync</span> <span class="pl-k">=</span> <span class="pl-k">new</span> <span class="pl-en">PgAsync</span>(<span class="pl-c1">null</span>, <span class="pl-c1">require</span>(<span class="pl-s"><span class="pl-pds">'</span>pg<span class="pl-pds">'</span></span>).<span class="pl-smi">native</span>);</pre></div>
+
+<hr>
+
+<h4>
+<a id="await-pgasyncquerysql-values---pgresult" class="anchor" href="#await-pgasyncquerysql-values---pgresult" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a><code>await pgAsync.query(sql, values...) -&gt; pg.Result</code>
+</h4>
+
+<h4>
+<a id="await-pgasyncqueryargssql-values---pgresult" class="anchor" href="#await-pgasyncqueryargssql-values---pgresult" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a><code>await pgAsync.queryArgs(sql, [values]) -&gt; pg.Result</code>
 </h4>
 
 <ul>
 <li>Execute SQL and return <code>Result</code> object from underlying <code>pg</code> library</li>
+<li>Interesting properties on <code>Result</code> object are:
+
+<ul>
+<li>
+<code>rowCount</code> Number ­– returned rows</li>
+<li>
+<code>oid</code> Number ­– Postgres oid</li>
+<li>
+<code>rows</code> Array ­– Actual result of <code>pgAsync.rows()</code>
+</li>
+<li>
+<code>rowAsArray</code> Boolean</li>
+<li>
+<code>fields</code> Array of:
+
+<ul>
+<li>
+<code>name</code> String ­– name or alias of column</li>
+<li>
+<code>tableID</code> Number ­– oid of table or 0</li>
+<li>
+<code>columnID</code> Number ­– index of column in table or 0</li>
+<li>
+<code>dataTypeID</code> Number ­– oid of data type</li>
+<li>
+<code>dataTypeSize</code> Number ­– size in bytes od colum, -1 for variable length</li>
+<li>­<code>dataTypeModifier</code> Number </li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 
 <hr>
 
 <h4>
-<a id="rowssql-values-connectionoptions-promise---array-of-objects" class="anchor" href="#rowssql-values-connectionoptions-promise---array-of-objects" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a><code>rows(sql, [values], [connectionOptions]): Promise -&gt; array of objects</code>
+<a id="await-pgasyncrowssql-values---array-of-objects" class="anchor" href="#await-pgasyncrowssql-values---array-of-objects" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a><code>await pgAsync.rows(sql, values...) -&gt; array of objects</code>
+</h4>
+
+<h4>
+<a id="await-pgasyncrowsargssql-values---array-of-objects" class="anchor" href="#await-pgasyncrowsargssql-values---array-of-objects" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a><code>await pgAsync.rowsArgs(sql, [values]) -&gt; array of objects</code>
 </h4>
 
 <ul>
@@ -72,7 +143,11 @@ Can use pure JavaScript or native <code>pg</code> backend.</p>
 <hr>
 
 <h4>
-<a id="rowsql-values-connectionoptions-promise---object" class="anchor" href="#rowsql-values-connectionoptions-promise---object" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a><code>row(sql, [values], [connectionOptions]): Promise -&gt; object</code>
+<a id="await-pgasyncrowsql-values---object" class="anchor" href="#await-pgasyncrowsql-values---object" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a><code>await pgAsync.row(sql, values...) -&gt; object</code>
+</h4>
+
+<h4>
+<a id="await-pgasyncrowargssql-values---object" class="anchor" href="#await-pgasyncrowargssql-values---object" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a><code>await pgAsync.rowArgs(sql, [values]) -&gt; object</code>
 </h4>
 
 <ul>
@@ -84,7 +159,11 @@ If query yields more than one or none rows, promise will be rejected.</li>
 <hr>
 
 <h4>
-<a id="valuesql-values-connectionoptions-promise---any" class="anchor" href="#valuesql-values-connectionoptions-promise---any" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a><code>value(sql, [values], [connectionOptions]): Promise -&gt; any</code>
+<a id="await-pgasyncvaluesql-values---any" class="anchor" href="#await-pgasyncvaluesql-values---any" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a><code>await pgAsync.value(sql, values...) -&gt; any</code>
+</h4>
+
+<h4>
+<a id="await-pgasyncvalueargssql-values---any" class="anchor" href="#await-pgasyncvalueargssql-values---any" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a><code>await pgAsync.valueArgs(sql, [values]) -&gt; any</code>
 </h4>
 
 <ul>
@@ -94,7 +173,7 @@ If query yields more than one or none rows, promise will be rejected.</li>
 <hr>
 
 <h4>
-<a id="connectconstring-asyncfunc-promise" class="anchor" href="#connectconstring-asyncfunc-promise" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a><code>connect([conString], asyncFunc): Promise</code>
+<a id="await-pgasyncconnectasync-client--innerresult---innerresult" class="anchor" href="#await-pgasyncconnectasync-client--innerresult---innerresult" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a><code>await pgAsync.connect(async (client) =&gt; innerResult) -&gt; innerResult</code>
 </h4>
 
 <ul>
@@ -102,66 +181,59 @@ If query yields more than one or none rows, promise will be rejected.</li>
 <li>
 <code>asyncFunc</code> here has signature <code>async (client, pgClient) =&gt; { ... }</code>
 </li>
-<li>provided <code>client</code> has async methods <code>query</code>, <code>rows</code>, <code>row</code> and <code>value</code>.</li>
+<li>provided <code>client</code> has async methods:
+
+<ul>
+<li>
+<code>query</code>, <code>rows</code>, <code>row</code>, <code>value</code> as above</li>
+<li>
+<code>queryArgs</code>, <code>rowsArgs</code>, <code>rowArgs</code>, <code>valueArgs</code> as above</li>
+<li>
+<code>startTransaction</code>, <code>commit</code>, <code>rollback</code> - start new transaction manually. Use <code>pgAsync.transaction</code> when possible</li>
+</ul>
+</li>
 <li>
 <code>client</code> itself is shorthand for <code>query</code>
 </li>
 </ul>
 
-<p><strong>Example:</strong></p>
+<hr>
 
-<div class="highlight highlight-source-js"><pre><span class="pl-k">function</span> <span class="pl-en">transaction</span>(<span class="pl-smi">fromAccount</span>, <span class="pl-smi">toAccount</span>, <span class="pl-smi">amount</span>) {
-  <span class="pl-k">return</span> <span class="pl-en">connect</span>(<span class="pl-k">async</span> (<span class="pl-smi">c</span>) <span class="pl-k">=&gt;</span> {
-    <span class="pl-k">await</span> <span class="pl-en">c</span>(<span class="pl-s"><span class="pl-pds">'</span>BEGIN<span class="pl-pds">'</span></span>);
+<h4>
+<a id="await-pgasynctransactionasync-client--innerresult---innerresult" class="anchor" href="#await-pgasynctransactionasync-client--innerresult---innerresult" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a><code>await pgAsync.transaction(async (client) =&gt; innerResult) -&gt; innerResult</code>
+</h4>
+
+<p>Transaction is similar to <code>connect</code> but automatically start and commit transaction,
+rollback on throwen error
+<strong>Example:</strong></p>
+
+<div class="highlight highlight-source-js"><pre><span class="pl-k">const</span> <span class="pl-c1">pgAsync</span> <span class="pl-k">=</span> <span class="pl-k">new</span> <span class="pl-en">PgAsync</span>();
+
+<span class="pl-k">function</span> <span class="pl-en">moveMoney</span>(<span class="pl-smi">fromAccount</span>, <span class="pl-smi">toAccount</span>, <span class="pl-smi">amount</span>) {
+  <span class="pl-k">return</span> <span class="pl-smi">pgAsync</span>.<span class="pl-en">transaction</span>(<span class="pl-k">async</span> (<span class="pl-smi">client</span>) <span class="pl-k">=&gt;</span> {
     <span class="pl-k">let</span> movementFrom, movementTo, movementId;
-    <span class="pl-k">try</span> {
-      <span class="pl-k">const</span> <span class="pl-c1">sql</span> <span class="pl-k">=</span> <span class="pl-s"><span class="pl-pds">'</span>INSERT INTO bank_account (account, amount) VALUES ($1, $2) RETURNS id<span class="pl-pds">'</span></span>;
-      movementFrom <span class="pl-k">=</span> <span class="pl-k">await</span> <span class="pl-smi">c</span>.<span class="pl-c1">value</span>(sql, [fromAccount, <span class="pl-k">-</span>amount]);
-      movementTo <span class="pl-k">=</span> <span class="pl-k">await</span> <span class="pl-smi">c</span>.<span class="pl-c1">value</span>(sql, [toAccount, amount]);
-      movementId <span class="pl-k">=</span> <span class="pl-k">await</span> <span class="pl-en">c</span>(
-        <span class="pl-s"><span class="pl-pds">'</span>INSERT INTO movement (from, to, amount) VALUES ($1, $2, $3) RETURNS id<span class="pl-pds">'</span></span>,
-        [movementFrom, movementTo, amount]);
-      <span class="pl-k">await</span> <span class="pl-en">c</span>(<span class="pl-s"><span class="pl-pds">'</span>COMMIT<span class="pl-pds">'</span></span>);
-    } <span class="pl-k">catch</span> (err) {
-      <span class="pl-k">await</span> <span class="pl-en">c</span>(<span class="pl-s"><span class="pl-pds">'</span>ROLLBACK<span class="pl-pds">'</span></span>);
-    }
+    <span class="pl-k">const</span> <span class="pl-c1">sql</span> <span class="pl-k">=</span> <span class="pl-s"><span class="pl-pds">'</span>INSERT INTO bank_account (account, amount) VALUES ($1, $2) RETURNS id<span class="pl-pds">'</span></span>;
+    movementFrom <span class="pl-k">=</span> <span class="pl-k">await</span> <span class="pl-smi">client</span>.<span class="pl-c1">value</span>(sql, [fromAccount, <span class="pl-k">-</span>amount]);
+    movementTo <span class="pl-k">=</span> <span class="pl-k">await</span> <span class="pl-smi">client</span>.<span class="pl-c1">value</span>(sql, [toAccount, amount]);
+    <span class="pl-k">return</span> {movementFrom, movementTo}
   });
+}
+
+<span class="pl-k">async</span> <span class="pl-k">function</span> <span class="pl-en">doTheWork</span>() {
+  <span class="pl-k">...</span>
+  <span class="pl-k">try</span> {
+    <span class="pl-k">const</span> <span class="pl-c1">result</span> <span class="pl-k">=</span> <span class="pl-k">await</span> <span class="pl-en">moveMoney</span>(<span class="pl-s"><span class="pl-pds">'</span>alice<span class="pl-pds">'</span></span>, <span class="pl-s"><span class="pl-pds">'</span>bob<span class="pl-pds">'</span></span>, <span class="pl-c1">19.95</span>);
+    <span class="pl-c">// transaction is commited</span>
+  } <span class="pl-k">catch</span> (err) {
+    <span class="pl-c">// transaction is rollbacked</span>
+  }
+  <span class="pl-k">...</span>
 }</pre></div>
 
 <hr>
 
 <h4>
-<a id="setdefaultconnectiondefaults" class="anchor" href="#setdefaultconnectiondefaults" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a><code>setDefaultConnection(defaults)</code>
-</h4>
-
-<ul>
-<li>This parameters are used as defaults if no <code>connectionOptions</code> are provided to methods above.</li>
-<li>Note that this and <code>pg.defaults</code> are separate objcts/strings.
-Resolution of connection options can be described as:<br>
-<strong><code>connectionOptions</code></strong>(provided to function)
-<strong><code>|| pg-async.defaultConnection || pg.defaults</code></strong>
-</li>
-<li>See <a href="https://github.com/brianc/node-postgres/wiki/pg#pgdefaults"><code>pg.defaults</code></a>
-for more.</li>
-</ul>
-
-<hr>
-
-<h4>
-<a id="driver--returns-used-pg-instancedriverpg--set-pg-instance" class="anchor" href="#driver--returns-used-pg-instancedriverpg--set-pg-instance" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a><code>driver()</code> — returns used <code>pg</code> instance<br><code>driver(pg)</code> — set <code>pg</code> instance</h4>
-
-<ul>
-<li>To install the <a href="https://github.com/brianc/node-pg-native.git">native bindings</a>:</li>
-</ul>
-
-<div class="highlight highlight-source-shell"><pre>$ npm install --save pg pg-native</pre></div>
-
-<p>then you can call <code>driver(require('pg').native)</code></p>
-
-<hr>
-
-<h4>
-<a id="getclientconnectionoptions-promise---client-done" class="anchor" href="#getclientconnectionoptions-promise---client-done" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a><code>getClient([connectionOptions]): Promise -&gt; {client, done}</code>
+<a id="await-pgasyncgetclientconnectionoptions---client-done" class="anchor" href="#await-pgasyncgetclientconnectionoptions---client-done" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a><code>await pgAsync.getClient([connectionOptions]) -&gt; {client, done}</code>
 </h4>
 
 <ul>
@@ -174,12 +246,14 @@ You should not call this method unless you know what are you doing.</li>
 <hr>
 
 <h4>
-<a id="closeconnections" class="anchor" href="#closeconnections" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>closeConnections()</h4>
+<a id="pgasynccloseconnections" class="anchor" href="#pgasynccloseconnections" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a><code>pgAsync.closeConnections()</code>
+</h4>
 
 <ul>
 <li>Disconnects all idle clients within all active pools, and has all client pools terminate.
 See <a href="https://github.com/brianc/node-postgres/wiki/pg#end"><code>pg.end()</code></a>
 </li>
+<li>This actually terminates all connections on driver used by Pg instance</li>
 </ul>
 
 <hr>
@@ -191,7 +265,8 @@ See <a href="https://github.com/brianc/node-postgres/wiki/pg#end"><code>pg.end()
 <li>[x] <code>pg</code> driver support</li>
 <li>[x] <code>pg.native</code> driver support</li>
 <li>[x] <a href="https://github.com/visionmedia/debug#readme"><code>debug</code></a> — Enable debugging with <code>DEBUG="pg-async"</code> environment variable</li>
-<li>[ ] Transaction API wrapper</li>
+<li>[x] Transaction API wrapper - Postgres does not support nested transactions</li>
+<li>[ ] Transaction <code>SAVEPOINT</code> support</li>
 <li>[ ] Cursor API wrapper</li>
 </ul>
 
