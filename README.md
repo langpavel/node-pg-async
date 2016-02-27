@@ -1,5 +1,6 @@
 # pg-async 
 [![Npm Version](https://badge.fury.io/js/pg-async.svg)](https://badge.fury.io/js/pg-async)
+[![NPM downloads](http://img.shields.io/npm/dm/pg-async.svg)](https://www.npmjs.com/package/pg-async)
 [![Dependency Status](https://david-dm.org/langpavel/node-pg-async.svg)](https://david-dm.org/langpavel/node-pg-async)
 [![devDependency Status](https://david-dm.org/langpavel/node-pg-async/dev-status.svg)](https://david-dm.org/langpavel/node-pg-async#info=devDependencies)
 [![Build Status](https://circleci.com/gh/langpavel/node-pg-async.svg?style=shield)](https://circleci.com/gh/langpavel/node-pg-async) 
