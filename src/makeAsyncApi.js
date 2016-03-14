@@ -2,23 +2,31 @@ import Promise from 'bluebird';
 import debug from './debug';
 
 const makeAsyncApi = client => {
+
+  let inQuery = false;
+
   function query(sql, ...values) {
     return query.queryArgs(sql, values);
   }
 
   query.query = (sql, ...values) => query.queryArgs(sql, values);
-  query.queryArgs = (sql, values) =>
-    new Promise((resolve, reject) => {
-      debug('query params: %j query: %j', values, sql);
-      client.query(sql, values, (err, result) => {
-        if (err) {
-          debug('%s query(%j, %j)', err, sql, values);
-          return reject(err);
-        }
-        debug('query ok: %d rows', result.rowCount);
-        return resolve(result);
-      });
+  query.queryArgs = (sql, values) => new Promise((resolve, reject) => {
+    if (inQuery)
+      throw new Error(
+        'Commands on same client should be called serially. ' +
+        'Do you forget `await`?');
+    inQuery = true;
+    debug('query params: %s query: %j', JSON.stringify(values).slice(0,60), sql);
+    client.query(sql, values, (err, result) => {
+      inQuery = false;
+      if (err) {
+        debug('%s query(%j, %j)', err, sql, values);
+        return reject(err);
+      }
+      debug('query ok: %d rows', result.rowCount);
+      return resolve(result);
     });
+  });
 
   query.rows = (sql, ...values) => query.rowsArgs(sql, values);
   query.rowsArgs = async (sql, values) => (await query.queryArgs(sql, values)).rows;

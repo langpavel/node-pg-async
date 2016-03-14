@@ -72,7 +72,14 @@ export default class PgAsync {
           if (done) done(err);
           return reject(err);
         }
-        return resolve({client, done});
+        return resolve({
+          client,
+          done: () => {
+            debug('Client released');
+            client.queryArgs = () => { throw new Error('Client was released.'); };
+            done();
+          }
+        });
       });
     });
   }
@@ -97,6 +104,7 @@ export default class PgAsync {
     checkAsyncFunction(asyncFunc);
 
     return await this.connect(async (client) => {
+      client.checkSerialAccess = true;
       await client.startTransaction();
       try {
         const result = await asyncFunc(client);

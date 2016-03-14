@@ -36,8 +36,8 @@ function testWithDriver(driverName, driver) {
       const random = Math.trunc(Math.random() * 1e9) + 1;
       let id;
       try {
-        id = await pg.transaction((t) =>
-          t.value(`INSERT INTO pgAsyncTest (val) VALUES ($1) RETURNING id`, random)
+        id = await pg.transaction(async (t) =>
+          await t.value(`INSERT INTO pgAsyncTest (val) VALUES ($1) RETURNING id`, random)
         );
       } catch (err) {
       }
@@ -64,7 +64,7 @@ function testWithDriver(driverName, driver) {
       let error, id;
       try {
         await pg.connect(async (t) => {
-          t.startTransaction();
+          await t.startTransaction();
           id = await t.value(`INSERT INTO pgAsyncTest (val) VALUES ($1) RETURNING id`, random);
         });
       } catch (err) {
