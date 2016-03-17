@@ -11,6 +11,34 @@ designed for easy use with ES7 async/await.<br/>
 Based on [node-postgres](https://github.com/brianc/node-postgres) (known as `pg` in npm registry).
 Can use `pg` or native `pg-native` backend.
 
+## Example
+
+```js
+import PgAsync, {SQL} from 'pg-async';
+
+// using default connection
+const pgAsync = new PgAsync();
+
+const userTable = 'user';
+const sqlUserByLogin = (login) => SQL`
+  select id
+  from $ID${userTable}
+  where login = ${login}
+`;
+
+async function setPassword(login, newPwd) {
+  const userId = await pgAsync.value(sqlUserByLogin(login));
+  // userId is guaranted here,
+  // pgAsync.value requires query yielding exactly one row with one column.
+  await pgAsync.query(SQL`
+    update $ID${userTable} set
+      passwd = ${newPwd}
+    where userId = ${userId}
+  `);
+}
+
+```
+
 ## Install
 
 ```
@@ -49,6 +77,7 @@ const pgAsync = new PgAsync(null, require('pg').native);
 
 ---
 
+#### `await pgAsync.query(SQL`...`) -> pg.Result`
 #### `await pgAsync.query(sql, values...) -> pg.Result`
 #### `await pgAsync.queryArgs(sql, [values]) -> pg.Result`
 
@@ -68,6 +97,7 @@ const pgAsync = new PgAsync(null, require('pg').native);
 
 ---
 
+#### `await pgAsync.rows(SQL`...`) -> array of objects`
 #### `await pgAsync.rows(sql, values...) -> array of objects`
 #### `await pgAsync.rowsArgs(sql, [values]) -> array of objects`
 
@@ -75,6 +105,7 @@ const pgAsync = new PgAsync(null, require('pg').native);
 
 ---
 
+#### `await pgAsync.row(SQL`...`) -> object`
 #### `await pgAsync.row(sql, values...) -> object`
 #### `await pgAsync.rowArgs(sql, [values]) -> object`
 
@@ -84,6 +115,7 @@ const pgAsync = new PgAsync(null, require('pg').native);
 
 ---
 
+#### `await pgAsync.value(SQL`...`) -> any`
 #### `await pgAsync.value(sql, values...) -> any`
 #### `await pgAsync.valueArgs(sql, [values]) -> any`
 
@@ -162,6 +194,7 @@ async function doTheWork() {
  * [x] `pg.native` driver support
  * [x] [`debug`](https://github.com/visionmedia/debug#readme) — Enable debugging with `DEBUG="pg-async"` environment variable
  * [x] Transaction API wrapper - Postgres does not support nested transactions
+ * [x] Template tag SQL formatting
  * [ ] Transaction `SAVEPOINT` support
  * [ ] Cursor API wrapper
 

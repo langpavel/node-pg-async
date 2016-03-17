@@ -9,7 +9,7 @@ describe('pg shortcuts', () => {
   });
 
   it('query works', async () => {
-    const result = await pg.query('SELECT $1::int as int, $2::text as text', 123, 'abc');
+    const result = await pg.query(pg.SQL`SELECT ${123}::int as int, ${'abc'}::text as text`);
     expect(result).to.be.a('object');
     expect(result.rows).to.be.a('array');
     expect(result.rows).lengthOf(1);
@@ -24,7 +24,7 @@ describe('pg shortcuts', () => {
   });
 
   it('queryArgs works', async () => {
-    const result = await pg.queryArgs('SELECT $1::int as int, $2::text as text', [123, 'abc']);
+    const result = await pg.queryArgs(pg.SQL`SELECT ${123}::int as int, ${'abc'}::text as text`);
     expect(result).to.be.a('object');
     expect(result.rows).to.be.a('array');
     expect(result.rows).lengthOf(1);

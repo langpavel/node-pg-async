@@ -20,4 +20,5 @@ describe('pg-async client', () => {
   it('value', () => expect(pg.value).to.be.a('function'));
   it('valueArgs', () => expect(pg.value).to.be.a('function'));
   it('closeConnections', () => expect(pg.closeConnections).to.be.a('function'));
+  it('SQL', () => expect(pg.SQL).to.be.a('function'));
 });

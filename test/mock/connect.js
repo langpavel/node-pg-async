@@ -36,6 +36,17 @@ describe('pg-async connect (with mock driver)', () => {
     expect(pg.getDriver().connections).to.be.equal(0);
   });
 
+  it('should throw after connection released', async () => {
+    const cli = await pg.connect(client => client);
+    let throws = false;
+    try {
+      await cli.queryArgs('SELECT 1');
+    } catch (err) {
+      throws = true;
+    }
+    expect(throws).equal(true);
+  });
+
   it('should release connection on client error', async () => {
     try {
       await pg.connect(async () => {

@@ -41,6 +41,19 @@ function testWithDriver(driverName, driver) {
       }
     });
 
+    it('throws if client early ended', async () => {
+      let throws = false;
+      try {
+        await pg.connect(async (q) => {
+          q('select pg_sleep(0.1)');
+        });
+      } catch (err) {
+        throws = true;
+        expect(err).instanceOf(Error);
+      }
+      expect(throws).equal(true);
+    });
+
     describe('method', () => {
       it('query works', async () => {
         await pg.connect(async (q) => {

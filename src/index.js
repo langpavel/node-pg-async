@@ -2,6 +2,9 @@ import Promise from 'bluebird';
 import pgDriver from 'pg';
 import debug from './debug';
 import makeAsyncApi from './makeAsyncApi';
+import SqlTag from './sql';
+
+export const SQL = SqlTag;
 
 function checkAsyncFunction(asyncFunc) {
   if (typeof asyncFunc !== 'function')
@@ -34,6 +37,9 @@ export default class PgAsync {
     wrap('value');
     wrapArgs('valueArgs');
   }
+
+  static SQL = SqlTag;
+  SQL = SqlTag;
 
   setConnectionOptions(options) {
     this._connectionOptions = options;
@@ -76,7 +82,6 @@ export default class PgAsync {
           client,
           done: () => {
             debug('Client released');
-            client.queryArgs = () => { throw new Error('Client was released.'); };
             done();
           }
         });
@@ -91,7 +96,7 @@ export default class PgAsync {
     try {
       const api = makeAsyncApi(client);
       const result = await asyncFunc(api);
-      await api.end();
+      await api._end();
       done();
       return result;
     } catch (err) {

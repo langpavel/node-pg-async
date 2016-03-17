@@ -1,5 +1,6 @@
 import Promise from 'bluebird';
 import debug from './debug';
+import SQL, {SqlFragment} from './sql';
 
 const makeAsyncApi = client => {
 
@@ -9,27 +10,40 @@ const makeAsyncApi = client => {
     return query.queryArgs(sql, values);
   }
 
+  let _queryArgs = (sql, values) => {
+    if (sql instanceof SqlFragment) {
+      values = sql.values;
+      sql = sql.text;
+    }
+
+    inQuery = true;
+    return new Promise((resolve, reject) => {
+      debug('query params: %s query: %j', JSON.stringify(values).slice(0,60), sql);
+      client.query(sql, values, (err, result) => {
+        inQuery = false;
+        if (err) {
+          debug('%s query(%j, %j)', err, sql, values);
+          return reject(err);
+        }
+        debug('query ok: %d rows', result.rowCount);
+        return resolve(result);
+      });
+    });
+  };
+
+  query.SQL = SQL;
+
   query.query = (sql, ...values) => query.queryArgs(sql, values);
-  query.queryArgs = (sql, values) => new Promise((resolve, reject) => {
+  query.queryArgs = (sql, values) => {
     if (inQuery)
       throw new Error(
         'Commands on same client should be called serially. ' +
         'Do you forget `await`?');
-    inQuery = true;
-    debug('query params: %s query: %j', JSON.stringify(values).slice(0,60), sql);
-    client.query(sql, values, (err, result) => {
-      inQuery = false;
-      if (err) {
-        debug('%s query(%j, %j)', err, sql, values);
-        return reject(err);
-      }
-      debug('query ok: %d rows', result.rowCount);
-      return resolve(result);
-    });
-  });
+    return _queryArgs(sql, values);
+  };
 
   query.rows = (sql, ...values) => query.rowsArgs(sql, values);
-  query.rowsArgs = async (sql, values) => (await query.queryArgs(sql, values)).rows;
+  query.rowsArgs = (sql, values) => query.queryArgs(sql, values).then(r => r.rows);
 
   query.row = (sql, ...values) => query.rowArgs(sql, values);
   query.rowArgs = async (sql, values) => {
@@ -41,11 +55,19 @@ const makeAsyncApi = client => {
 
   query.value = async (sql, ...values) => query.valueArgs(sql, values);
   query.valueArgs = async (sql, values) => {
-    // will be better to use require('pgDriver/lib/utils').normalizeQueryConfig
-    // but it is private API
-    const opts = typeof(sql) === 'string'
-      ? {text: sql, rowMode: 'array'}
-      : {...sql, rowMode: 'array'};
+    let opts;
+    if (sql instanceof SqlFragment) {
+      opts = {
+        ...sql,
+        rowMode: 'array',
+      };
+      values = sql.values;
+    } else {
+      opts = typeof(sql) === 'string'
+        ? {text: sql, rowMode: 'array'}
+        : {...sql, rowMode: 'array'};
+    }
+
     const result = await query.rowArgs(opts, values);
     if (result.length !== 1)
       throw new Error(`SQL: Expected exactly one column but ${result.length} returned`);
@@ -66,14 +88,25 @@ const makeAsyncApi = client => {
 
   query.rollback = () => {
     query.inTransaction = false;
-    return query.query('ROLLBACK');
+    return _queryArgs('ROLLBACK', []);
   };
 
-  query.end = async () => {
-    if (query.inTransaction) {
-      await query.rollback();
-      throw new Error('Transaction started manually but not closed. Automatic rollback');
-    }
+  query._end = () => {
+    const queryArgs = _queryArgs;
+    _queryArgs = () => { throw new Error('Client was released.'); };
+    return new Promise((resolve) => {
+      if (inQuery)
+        throw new Error(
+          'Client shutting down but query is pending. ' +
+          'Do you forget `await`?');
+
+      if (query.inTransaction) {
+        query.inTransaction = false;
+        queryArgs('ROLLBACK', []);
+        throw new Error('Transaction started manually but not closed. Automatic rollback');
+      }
+      resolve();
+    });
   };
 
   return query;
