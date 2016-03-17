@@ -1,6 +1,10 @@
+.babelrc
+.editorconfig
+.eslintrc
+.gitignore
+.npmignore
+circle.yml
 coverage/
+gulpfile.babel.js
 src/
 test/
-.editorconfig
-.gitignore
-circle.yml

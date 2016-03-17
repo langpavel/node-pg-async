@@ -52,7 +52,7 @@ $ npm install --save pg-async
 new PgAsync([connectionOptions], [driver])
 ```
 
-* The only export of `pg-async` is `PgAsync` class which let you configure connection options
+* The default export of `pg-async` is `PgAsync` class which let you configure connection options
 * Connection options defaults to [`pg.defaults`](https://github.com/brianc/node-postgres/wiki/pg#pgdefaults)
 * Optional `driver` let you choose underlying library
 * To use the [native bindings](https://github.com/brianc/node-pg-native.git) you must `npm install --save pg-native`
