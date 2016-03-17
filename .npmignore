@@ -1,5 +1,6 @@
 coverage/
 src/
+test/
 .editorconfig
 .gitignore
 circle.yml
