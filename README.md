@@ -77,7 +77,7 @@ const pgAsync = new PgAsync(null, require('pg').native);
 
 ---
 
-#### `await pgAsync.query(SQL`...`) -> pg.Result`
+#### ```await pgAsync.query(SQL`...`) -> pg.Result```
 #### `await pgAsync.query(sql, values...) -> pg.Result`
 #### `await pgAsync.queryArgs(sql, [values]) -> pg.Result`
 
@@ -97,7 +97,7 @@ const pgAsync = new PgAsync(null, require('pg').native);
 
 ---
 
-#### `await pgAsync.rows(SQL`...`) -> array of objects`
+#### ```await pgAsync.rows(SQL`...`) -> array of objects```
 #### `await pgAsync.rows(sql, values...) -> array of objects`
 #### `await pgAsync.rowsArgs(sql, [values]) -> array of objects`
 
@@ -105,7 +105,7 @@ const pgAsync = new PgAsync(null, require('pg').native);
 
 ---
 
-#### `await pgAsync.row(SQL`...`) -> object`
+#### ```await pgAsync.row(SQL`...`) -> object```
 #### `await pgAsync.row(sql, values...) -> object`
 #### `await pgAsync.rowArgs(sql, [values]) -> object`
 
@@ -115,7 +115,7 @@ const pgAsync = new PgAsync(null, require('pg').native);
 
 ---
 
-#### `await pgAsync.value(SQL`...`) -> any`
+#### ```await pgAsync.value(SQL`...`) -> any```
 #### `await pgAsync.value(sql, values...) -> any`
 #### `await pgAsync.valueArgs(sql, [values]) -> any`
 
