@@ -44,6 +44,33 @@ Based on <a href="https://github.com/brianc/node-postgres">node-postgres</a> (kn
 Can use <code>pg</code> or native <code>pg-native</code> backend.</p>
 
 <h2>
+<a id="example" class="anchor" href="#example" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Example</h2>
+
+<div class="highlight highlight-source-js"><pre><span class="pl-k">import</span> <span class="pl-smi">PgAsync</span>, {<span class="pl-smi">SQL</span>} <span class="pl-k">from</span> <span class="pl-s"><span class="pl-pds">'</span>pg-async<span class="pl-pds">'</span></span>;
+
+<span class="pl-c">// using default connection</span>
+<span class="pl-k">const</span> <span class="pl-c1">pgAsync</span> <span class="pl-k">=</span> <span class="pl-k">new</span> <span class="pl-en">PgAsync</span>();
+
+<span class="pl-k">const</span> <span class="pl-c1">userTable</span> <span class="pl-k">=</span> <span class="pl-s"><span class="pl-pds">'</span>user<span class="pl-pds">'</span></span>;
+<span class="pl-k">const</span> <span class="pl-c1">sqlUserByLogin</span> <span class="pl-k">=</span> (<span class="pl-smi">login</span>) <span class="pl-k">=&gt;</span> <span class="pl-c1">SQL</span><span class="pl-s"><span class="pl-pds">`</span></span>
+<span class="pl-s">  select id</span>
+<span class="pl-s">  from $ID<span class="pl-s1"><span class="pl-pse">${</span>userTable<span class="pl-pse">}</span></span></span>
+<span class="pl-s">  where login = <span class="pl-s1"><span class="pl-pse">${</span>login<span class="pl-pse">}</span></span></span>
+<span class="pl-s"><span class="pl-pds">`</span></span>;
+
+<span class="pl-k">async</span> <span class="pl-k">function</span> <span class="pl-en">setPassword</span>(<span class="pl-smi">login</span>, <span class="pl-smi">newPwd</span>) {
+  <span class="pl-k">const</span> <span class="pl-c1">userId</span> <span class="pl-k">=</span> <span class="pl-k">await</span> <span class="pl-smi">pgAsync</span>.<span class="pl-c1">value</span>(<span class="pl-en">sqlUserByLogin</span>(login));
+  <span class="pl-c">// userId is guaranted here,</span>
+  <span class="pl-c">// pgAsync.value requires query yielding exactly one row with one column.</span>
+  <span class="pl-k">await</span> <span class="pl-smi">pgAsync</span>.<span class="pl-en">query</span>(<span class="pl-c1">SQL</span><span class="pl-s"><span class="pl-pds">`</span></span>
+<span class="pl-s">    update $ID<span class="pl-s1"><span class="pl-pse">${</span>userTable<span class="pl-pse">}</span></span> set</span>
+<span class="pl-s">      passwd = <span class="pl-s1"><span class="pl-pse">${</span>newPwd<span class="pl-pse">}</span></span></span>
+<span class="pl-s">    where userId = <span class="pl-s1"><span class="pl-pse">${</span>userId<span class="pl-pse">}</span></span></span>
+<span class="pl-s">  <span class="pl-pds">`</span></span>);
+}
+</pre></div>
+
+<h2>
 <a id="install" class="anchor" href="#install" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Install</h2>
 
 <pre><code>$ npm install --save pg-async
@@ -83,6 +110,10 @@ Can use <code>pg</code> or native <code>pg-native</code> backend.</p>
 <span class="pl-k">const</span> <span class="pl-c1">pgAsync</span> <span class="pl-k">=</span> <span class="pl-k">new</span> <span class="pl-en">PgAsync</span>(<span class="pl-c1">null</span>, <span class="pl-c1">require</span>(<span class="pl-s"><span class="pl-pds">'</span>pg<span class="pl-pds">'</span></span>).<span class="pl-smi">native</span>);</pre></div>
 
 <hr>
+
+<h4>
+<a id="await-pgasyncquerysql---pgresult" class="anchor" href="#await-pgasyncquerysql---pgresult" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a><code>await pgAsync.query(SQL`...`) -&gt; pg.Result</code>
+</h4>
 
 <h4>
 <a id="await-pgasyncquerysql-values---pgresult" class="anchor" href="#await-pgasyncquerysql-values---pgresult" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a><code>await pgAsync.query(sql, values...) -&gt; pg.Result</code>
@@ -130,6 +161,10 @@ Can use <code>pg</code> or native <code>pg-native</code> backend.</p>
 <hr>
 
 <h4>
+<a id="await-pgasyncrowssql---array-of-objects" class="anchor" href="#await-pgasyncrowssql---array-of-objects" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a><code>await pgAsync.rows(SQL`...`) -&gt; array of objects</code>
+</h4>
+
+<h4>
 <a id="await-pgasyncrowssql-values---array-of-objects" class="anchor" href="#await-pgasyncrowssql-values---array-of-objects" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a><code>await pgAsync.rows(sql, values...) -&gt; array of objects</code>
 </h4>
 
@@ -142,6 +177,10 @@ Can use <code>pg</code> or native <code>pg-native</code> backend.</p>
 </ul>
 
 <hr>
+
+<h4>
+<a id="await-pgasyncrowsql---object" class="anchor" href="#await-pgasyncrowsql---object" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a><code>await pgAsync.row(SQL`...`) -&gt; object</code>
+</h4>
 
 <h4>
 <a id="await-pgasyncrowsql-values---object" class="anchor" href="#await-pgasyncrowsql-values---object" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a><code>await pgAsync.row(sql, values...) -&gt; object</code>
@@ -158,6 +197,10 @@ If query yields more than one or none rows, promise will be rejected.</li>
 </ul>
 
 <hr>
+
+<h4>
+<a id="await-pgasyncvaluesql---any" class="anchor" href="#await-pgasyncvaluesql---any" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a><code>await pgAsync.value(SQL`...`) -&gt; any</code>
+</h4>
 
 <h4>
 <a id="await-pgasyncvaluesql-values---any" class="anchor" href="#await-pgasyncvaluesql-values---any" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a><code>await pgAsync.value(sql, values...) -&gt; any</code>
@@ -271,6 +314,7 @@ See <a href="https://github.com/brianc/node-postgres/wiki/pg#end"><code>pg.end()
 <li>[x] <code>pg.native</code> driver support</li>
 <li>[x] <a href="https://github.com/visionmedia/debug#readme"><code>debug</code></a> — Enable debugging with <code>DEBUG="pg-async"</code> environment variable</li>
 <li>[x] Transaction API wrapper - Postgres does not support nested transactions</li>
+<li>[x] Template tag SQL formatting</li>
 <li>[ ] Transaction <code>SAVEPOINT</code> support</li>
 <li>[ ] Cursor API wrapper</li>
 </ul>
