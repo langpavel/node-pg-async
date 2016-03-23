@@ -120,7 +120,7 @@ SQL.transform = (name, value) => {
   name = name.trim().toLowerCase();
   const transform = SQL._transforms[name];
   if (!transform)
-    throw new Error(`Unknown transform: "${transformName}"`);
+    throw new Error(`Unknown transform: "${name}"`);
   return transform(value);
 };
 
