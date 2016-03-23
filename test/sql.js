@@ -107,6 +107,18 @@ describe('pg-async SQL template tag', () => {
     expect(sql.values.length).equal(0);
   });
 
+  it('parse with insert_object transform', () => {
+    const data = {
+      id: 123,
+      val: 'abc',
+    };
+    const sql = SQL`INSERT INTO t $insert_object${data}`;
+    expect(sql.text).equal('INSERT INTO t ("id","val") VALUES ($1,$2)');
+    expect(sql.values.length).equal(2);
+    expect(sql.values[0]).equal(123);
+    expect(sql.values[1]).equal('abc');
+  });
+
   it('SQL not nesting if ensuring SQL', () => {
     const sql1 = SQL`${'Value'}`;
     const sql2 = SQL(sql1);

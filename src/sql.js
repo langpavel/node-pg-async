@@ -124,6 +124,9 @@ SQL.transform = (name, value) => {
   return transform(value);
 };
 
+export const escapeIdentifier = pg.Client.prototype.escapeIdentifier;
+export const escapeLiteral = pg.Client.prototype.escapeLiteral;
+
 export function sqlStr(str) {
   if (typeof str !== 'string')
     throw new Error(`Expected string, got ${inspect(str)}`);
@@ -136,7 +139,7 @@ export function identifier(name) {
   if (!name)
     throw new Error(`Expected nonempty string, got ${inspect(name)}`);
 
-  return SQL(pg.Client.prototype.escapeIdentifier(name));
+  return SQL(escapeIdentifier(name));
 }
 
 // returns quoted identifier
@@ -151,16 +154,40 @@ export function literal(value) {
     return SQL.NULL;
 
   if (value.toPostgres)
-    return SQL(pg.Client.prototype.escapeLiteral(value.toPostgres()));
+    return SQL(escapeLiteral(value.toPostgres()));
 
   if (value.toSQL)
     return SQL(value.toSQL());
 
-  return SQL(pg.Client.prototype.escapeLiteral(value.toString()));
+  return SQL(escapeLiteral(value.toString()));
 }
 
-SQL.registerTransform('name', 'id', 'ident', 'identifier', identifier);
+export function insert_object(data) {
+  const keys = Object.keys(data);
+  const length = keys.length;
+  const sqlFragments = new Array(length);
+  const values = new Array(length - 1);
+  const sb = [];
+
+  sb.push('(');
+  let i = 0;
+  while (i < length) {
+    const column = keys[i];
+    values[i] = data[column];
+    i++;
+    sb.push(escapeIdentifier(column), ',');
+    sqlFragments[i] = ',';
+  }
+  sb[sb.length - 1] = ') VALUES (';
+  sqlFragments[0] = sb.join('');
+  sqlFragments[i] = ')';
+
+  return new SqlFragment(sqlFragments, values);
+}
+
+SQL.registerTransform('id', 'ident', 'identifier', 'name', identifier);
 SQL.registerTransform('', 'literal', literal);
 SQL.registerTransform('!', 'raw', sqlStr);
+SQL.registerTransform('insert_object', 'insert', insert_object);
 
 export default SQL;
