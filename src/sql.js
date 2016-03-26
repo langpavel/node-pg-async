@@ -1,6 +1,7 @@
 
 import {inspect} from 'util';
 import pg from 'pg';
+import {prepareValue} from 'pg/lib/utils';
 
 export class SqlFragment {
 
@@ -154,7 +155,7 @@ export function literal(value) {
     return SQL.NULL;
 
   if (value.toPostgres)
-    return SQL(escapeLiteral(value.toPostgres()));
+    return SQL(escapeLiteral(value.toPostgres(prepareValue)));
 
   if (value.toSQL)
     return SQL(value.toSQL());
