@@ -1,5 +1,5 @@
 import {expect} from 'chai';
-import Pg from '../src/index';
+import Pg, {sqlStr, literal, identifier} from '../src/index';
 
 const pg = new Pg;
 
@@ -21,4 +21,7 @@ describe('pg-async client', () => {
   it('valueArgs', () => expect(pg.value).to.be.a('function'));
   it('closeConnections', () => expect(pg.closeConnections).to.be.a('function'));
   it('SQL', () => expect(pg.SQL).to.be.a('function'));
+  it('sqlStr', () => expect(sqlStr).to.be.a('function'));
+  it('literal', () => expect(literal).to.be.a('function'));
+  it('identifier', () => expect(identifier).to.be.a('function'));
 });

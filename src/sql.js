@@ -37,6 +37,8 @@ export class SqlFragment {
     while (i < length) {
       const parts = templateParts[i].split('$');
       let value = templateValues.shift();
+      if (typeof value === 'undefined')
+        throw new Error(`Expected something, but got undefined.`);
 
       while (parts.length > 1)
         value = SQL.transform(parts.pop(), value);
@@ -143,7 +145,7 @@ export function identifier(name) {
   return SQL(escapeIdentifier(name));
 }
 
-// returns quoted identifier
+// returns quoted literal
 export function literal(value) {
   if (value instanceof SqlFragment)
     return value;

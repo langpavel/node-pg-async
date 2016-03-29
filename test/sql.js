@@ -1,5 +1,5 @@
 import {expect} from 'chai';
-import {SQL} from '../src';
+import {SQL, literal} from '../src';
 
 describe('pg-async SQL template tag', () => {
   it('parse without args', () => {
@@ -162,10 +162,16 @@ describe('pg-async SQL errors', () => {
     }).throws(Error);
   });
 
+  it('throws on passing undefined', () => {
+    const data = {};
+    expect(() => SQL`update mytable set myvalue = ${data.mistyped}`).throws(Error);
+  });
+
   it('throws on transforming undefined', () => {
     let undef;
     expect(() => SQL`SELECT * FROM $ID${undef}`).throws(Error);
     expect(() => SQL`SELECT * FROM $${undef}`).throws(Error);
+    expect(() => literal(undef)).throws(Error);
   });
 
 });

@@ -4,6 +4,7 @@ import debug from './debug';
 import makeAsyncApi from './makeAsyncApi';
 import SqlTag from './sql';
 
+export {sqlStr, literal, identifier} from './sql';
 export const SQL = SqlTag;
 
 function checkAsyncFunction(asyncFunc) {
