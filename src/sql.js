@@ -38,7 +38,9 @@ export class SqlFragment {
       const parts = templateParts[i].split('$');
       let value = templateValues.shift();
       if (typeof value === 'undefined')
-        throw new Error(`Expected something, but got undefined.`);
+        throw new Error(
+          `Expected something, but got undefined. ` +
+          `Value after SQL fragment: ${text.join('')}${templateParts[i]}`);
 
       while (parts.length > 1)
         value = SQL.transform(parts.pop(), value);
