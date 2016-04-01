@@ -3,6 +3,13 @@
     "node": true
   },
   "parser": "babel-eslint",
+  "parserOptions": {
+    "ecmaVersion": 6,
+    "sourceType": "module",
+    "ecmaFeatures": {
+      "modules": true
+    }
+  },
   "plugins": ["import"],
   "rules": {
     // enforces getter/setter pairs in objects

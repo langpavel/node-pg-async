@@ -1,7 +1,8 @@
-
 import {inspect} from 'util';
 import pg from 'pg';
 import {prepareValue} from 'pg/lib/utils';
+
+let SQL;
 
 export class SqlFragment {
 
@@ -91,7 +92,7 @@ export class SqlFragment {
   }
 }
 
-let SQL = (parts, ...values) => {
+SQL = (parts, ...values) => { // eslint-disable-line prefer-const
   // only one argument, called manually
   if (!Array.isArray(parts) && values.length === 0) {
     if (parts instanceof SqlFragment)
