@@ -1,0 +1,20 @@
+language: node_js
+node_js:
+  - "5"
+  - "4"
+services:
+  - postgresql
+env:
+  - CC=clang CXX=clang++ npm_config_clang=1 PGUSER=postgres PGDATABASE=postgres
+
+sudo: false
+addons:
+  postgresql: "9.4"
+  apt:
+    sources:
+      - ubuntu-toolchain-r-test
+    packages:
+      - g++-4.8
+after_script:
+  - npm install coveralls
+  - cat ./coverage/lcov.info | ./node_modules/.bin/coveralls
