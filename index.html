@@ -35,8 +35,9 @@
 <a href="https://www.npmjs.com/package/pg-async"><img src="http://img.shields.io/npm/dm/pg-async.svg" alt="NPM downloads"></a>
 <a href="https://david-dm.org/langpavel/node-pg-async"><img src="https://david-dm.org/langpavel/node-pg-async.svg" alt="Dependency Status"></a>
 <a href="https://david-dm.org/langpavel/node-pg-async#info=devDependencies"><img src="https://david-dm.org/langpavel/node-pg-async/dev-status.svg" alt="devDependency Status"></a>
-<a href="https://circleci.com/gh/langpavel/node-pg-async"><img src="https://circleci.com/gh/langpavel/node-pg-async.svg?style=shield" alt="Build Status"></a> 
-<a href="https://coveralls.io/github/langpavel/node-pg-async?branch=master"><img src="https://coveralls.io/repos/github/langpavel/node-pg-async/badge.svg?branch=master" alt="Coverage Status"></a></p>
+<a href="https://travis-ci.org/langpavel/node-pg-async"><img src="https://api.travis-ci.org/langpavel/node-pg-async.svg" alt="Build Status"></a>
+<a href="https://coveralls.io/github/langpavel/node-pg-async?branch=master"><img src="https://coveralls.io/repos/github/langpavel/node-pg-async/badge.svg?branch=master" alt="Coverage Status"></a>
+<a href="https://gitter.im/langpavel/node-pg-async?utm_source=badge&amp;utm_medium=badge&amp;utm_campaign=pr-badge&amp;utm_content=badge"><img src="https://badges.gitter.im/langpavel/node-pg-async.svg" alt="Join the chat at https://gitter.im/langpavel/node-pg-async"></a></p>
 
 <p>Tiny but powerful Promise based PostgreSQL client for node.js
 designed for easy use with ES7 async/await.<br>
@@ -85,7 +86,7 @@ Can use <code>pg</code> or native <code>pg-native</code> backend.</p>
 <div class="highlight highlight-source-js"><pre><span class="pl-k">new</span> <span class="pl-en">PgAsync</span>([connectionOptions], [driver])</pre></div>
 
 <ul>
-<li>The only export of <code>pg-async</code> is <code>PgAsync</code> class which let you configure connection options</li>
+<li>The default export of <code>pg-async</code> is <code>PgAsync</code> class which let you configure connection options</li>
 <li>Connection options defaults to <a href="https://github.com/brianc/node-postgres/wiki/pg#pgdefaults"><code>pg.defaults</code></a>
 </li>
 <li>Optional <code>driver</code> let you choose underlying library</li>
