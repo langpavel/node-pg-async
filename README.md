@@ -3,7 +3,7 @@
 [![NPM downloads](http://img.shields.io/npm/dm/pg-async.svg)](https://www.npmjs.com/package/pg-async)
 [![Dependency Status](https://david-dm.org/langpavel/node-pg-async.svg)](https://david-dm.org/langpavel/node-pg-async)
 [![devDependency Status](https://david-dm.org/langpavel/node-pg-async/dev-status.svg)](https://david-dm.org/langpavel/node-pg-async#info=devDependencies)
-[![Build Status](https://circleci.com/gh/langpavel/node-pg-async.svg?style=shield)](https://circleci.com/gh/langpavel/node-pg-async) 
+[![Build Status](https://api.travis-ci.org/langpavel/node-pg-async.svg)](https://travis-ci.org/langpavel/node-pg-async)
 [![Coverage Status](https://coveralls.io/repos/github/langpavel/node-pg-async/badge.svg?branch=master)](https://coveralls.io/github/langpavel/node-pg-async?branch=master)
 
 Tiny but powerful Promise based PostgreSQL client for node.js
