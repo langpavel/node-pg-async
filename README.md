@@ -1,4 +1,6 @@
 # pg-async 
+
+[![Join the chat at https://gitter.im/langpavel/node-pg-async](https://badges.gitter.im/langpavel/node-pg-async.svg)](https://gitter.im/langpavel/node-pg-async?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [![Npm Version](https://badge.fury.io/js/pg-async.svg)](https://badge.fury.io/js/pg-async)
 [![NPM downloads](http://img.shields.io/npm/dm/pg-async.svg)](https://www.npmjs.com/package/pg-async)
 [![Dependency Status](https://david-dm.org/langpavel/node-pg-async.svg)](https://david-dm.org/langpavel/node-pg-async)
