@@ -4,6 +4,7 @@
 .gitignore
 .npmignore
 circle.yml
+.travis.yml
 coverage/
 gulpfile.babel.js
 src/
