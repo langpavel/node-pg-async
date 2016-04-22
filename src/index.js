@@ -17,13 +17,14 @@ export default class PgAsync {
     this.setConnectionOptions(connectionOptions);
     this.setDriver(driver);
 
+    const self = this;
     const wrap = name => {
-      this[name] = (sql, ...values) =>
-        this.connect(client => client[`${name}Args`](sql, values));
+      self[name] = (sql, ...values) =>
+        self.connect(client => client[`${name}Args`](sql, values));
     };
     const wrapArgs = name => {
-      this[name] = (sql, values) =>
-        this.connect(client => client[name](sql, values));
+      self[name] = (sql, values) =>
+        self.connect(client => client[name](sql, values));
     };
 
     wrap('query');
