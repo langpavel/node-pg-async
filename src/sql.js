@@ -2,7 +2,7 @@ import {inspect} from 'util';
 import pg from 'pg';
 import {prepareValue} from 'pg/lib/utils';
 
-let SQL;
+let SQL; // eslint-disable-line prefer-const
 
 export class SqlFragment {
 

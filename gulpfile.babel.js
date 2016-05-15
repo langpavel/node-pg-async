@@ -11,7 +11,9 @@ const runEslint = () =>
     'src/**/*.js',
     'test/**/*.js'
   ])
-  .pipe(eslint())
+  .pipe(eslint({
+    parser: 'babel-eslint'
+  }))
   .pipe(eslint.format())
   .pipe(eslint.failAfterError());
 
