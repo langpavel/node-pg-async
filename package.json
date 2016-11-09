@@ -1,6 +1,6 @@
 {
   "name": "pg-async",
-  "version": "2.4.0",
+  "version": "2.4.1",
   "description": "PostgreSQL client for node.js designed for usage with ES7 async/await based on node-postgres (pg) module",
   "main": "lib/index.js",
   "scripts": {
@@ -35,9 +35,9 @@
   },
   "homepage": "https://github.com/langpavel/node-pg-async#readme",
   "dependencies": {
-    "bluebird": "^3.3.4",
-    "debug": "^2.2.0",
-    "pg": "^6.0.1"
+    "bluebird": "^3.4.6",
+    "debug": "^2.3.0",
+    "pg": "^6.1.0"
   },
   "devDependencies": {
     "babel": "^6.5.2",
