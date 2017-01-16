@@ -74,7 +74,10 @@ export default class PgAsync {
 
   async getClient() {
     return new Promise((resolve, reject) => {
-      this.getDriver().connect(this.getConnectionOptions(), (err, client, done) => {
+      const driver = this.getDriver();
+      const Pool = driver.Pool;
+      const pool = new Pool(this.getConnectionOptions());
+      pool.connect((err, client, done) => {
         if (err) {
           debug('%s getClient(%j)', err, this.getConnectionOptions());
           if (done) done(err);

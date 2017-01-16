@@ -17,15 +17,24 @@ export class Client {
   }
 }
 
+function poolFactory(driver) {
+  return function Pool() {
+    console.log('driver.connections = ', driver.connections);
+    return driver;
+  };
+};
+
 export default class PgMock {
-  constructor() {
+  constructor(conString) {
+    this.conString = conString;
     this.connections = 0;
     this.defaults = {};
     this.done = this.done.bind(this);
+    this.Pool = poolFactory(this);
   }
 
-  connect(conString, cb) {
-    if (conString === 'INVALID') {
+  connect(cb) {
+    if (this.conString === 'INVALID') {
       setImmediate(() => cb(new Error));
     } else {
       this.connections++;
