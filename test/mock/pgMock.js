@@ -19,7 +19,6 @@ export class Client {
 
 function poolFactory(driver) {
   return function Pool() {
-    console.log('driver.connections = ', driver.connections);
     return driver;
   };
 };
