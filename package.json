@@ -42,7 +42,7 @@
   "devDependencies": {
     "babel": "^6.5.2",
     "babel-core": "^6.24.0",
-    "babel-eslint": "^7.1.1",
+    "babel-eslint": "^7.2.2",
     "babel-plugin-add-module-exports": "^0.2.1",
     "babel-preset-es2015-node5": "^1.2.0",
     "babel-preset-stage-1": "^6.5.0",
