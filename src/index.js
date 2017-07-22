@@ -16,6 +16,7 @@ export default class PgAsync {
   constructor(connectionOptions, driver) {
     this.setConnectionOptions(connectionOptions);
     this.setDriver(driver);
+    this.setPool();
 
     const self = this;
     const wrap = name => {
@@ -72,11 +73,20 @@ export default class PgAsync {
     return this;
   }
 
+  setPool() {
+    const driver = this.getDriver();
+    const Pool = driver.Pool;
+    this._pool = new Pool(this.getConnectionOptions());
+    return this;
+  }
+
+  getPool() {
+    return this._pool;
+  }
+
   async getClient() {
     return new Promise((resolve, reject) => {
-      const driver = this.getDriver();
-      const Pool = driver.Pool;
-      const pool = new Pool(this.getConnectionOptions());
+      const pool = this.getPool();
       pool.connect((err, client, done) => {
         if (err) {
           debug('%s getClient(%j)', err, this.getConnectionOptions());
@@ -131,6 +141,5 @@ export default class PgAsync {
     });
   }
 
-  closeConnections = () => this.getDriver().end();
-
+  closeConnections = () => this.getPool().end();
 }
