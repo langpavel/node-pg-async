@@ -185,7 +185,7 @@ async function doTheWork() {
 #### `pgAsync.closeConnections()`
 
 * Disconnects all idle clients within all active pools, and has all client pools terminate.
-  See [`pg.end()`](https://github.com/brianc/node-postgres/wiki/pg#end)
+  See [`pool.end()`](https://node-postgres.com/api/pool#pool-end)
 * This actually terminates all connections on driver used by Pg instance
 
 ---
