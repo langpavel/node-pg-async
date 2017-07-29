@@ -8,6 +8,15 @@ services:
 env:
   - CC=clang CXX=clang++ npm_config_clang=1 PGUSER=postgres PGDATABASE=postgres
 
+install:
+  - npm install -g node-gyp
+  - npm install
+
+script:
+  - gulp lint
+  - gulp build
+  - gulp test
+
 sudo: false
 addons:
   postgresql: "9.4"
@@ -16,6 +25,6 @@ addons:
       - ubuntu-toolchain-r-test
     packages:
       - g++-4.8
-after_script:
+after_success:
   - npm install coveralls
   - cat ./coverage/lcov.info | ./node_modules/.bin/coveralls
