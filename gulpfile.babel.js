@@ -17,13 +17,13 @@ const runEslint = () =>
   .pipe(eslint.format())
   .pipe(eslint.failAfterError());
 
-gulp.task('clean', () => del('lib/*'));
+gulp.task('clean', () => del('lib/*.js'));
 
 gulp.task('eslint', () => runEslint());
 
 gulp.task('lint', ['eslint']);
 
-gulp.task('test', ['eslint'], (done) => {
+gulp.task('test', ['lint', 'build'], (done) => {
   gulp.src(['src/*.js'])
     .pipe(istanbul()) // Covering files
     .pipe(istanbul.hookRequire()) // Force `require` to return covered files
@@ -37,11 +37,11 @@ gulp.task('test', ['eslint'], (done) => {
     });
 });
 
-gulp.task('build', ['test'], () => {
+gulp.task('build', ['clean', 'lint'], () => {
   gulp.src('src/*.js')
     .pipe(babel())
     .pipe(gulp.dest('lib'));
 });
 
 // Default task to start development. Just type gulp.
-gulp.task('default', ['build', 'test']);
+gulp.task('default', ['clean', 'lint', 'build', 'test']);
