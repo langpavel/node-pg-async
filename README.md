@@ -66,7 +66,7 @@ import PgAsync from 'pg-async';
 const pgAsync = new PgAsync();
 
 // using connection string
-const pgAsync = new PgAsync('postgres://user:secret@host:port/database');
+const pgAsync = new PgAsync({connectionString: 'postgres://user:secret@host:port/database'});
 
 // using connection object
 const pgAsync = new PgAsync({user, password, host, port, database, ...});
