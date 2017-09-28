@@ -1,5 +1,7 @@
 # pg-async 
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/langpavel/node-pg-async.svg)](https://greenkeeper.io/)
+
 [![Npm Version](https://badge.fury.io/js/pg-async.svg)](https://badge.fury.io/js/pg-async)
 [![NPM downloads](http://img.shields.io/npm/dm/pg-async.svg)](https://www.npmjs.com/package/pg-async)
 [![Dependency Status](https://david-dm.org/langpavel/node-pg-async.svg)](https://david-dm.org/langpavel/node-pg-async)
