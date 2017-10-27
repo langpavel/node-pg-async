@@ -154,7 +154,7 @@ function moveMoney(fromAccount, toAccount, amount) {
     const sql = `
       INSERT INTO bank_account (account, amount)
       VALUES ($1, $2)
-      RETURNS id
+      RETURNING id
     `;
     movementFrom = await client.value(sql, [fromAccount, -amount]);
     movementTo = await client.value(sql, [toAccount, amount]);
