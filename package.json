@@ -58,7 +58,7 @@
     "gulp-babel-istanbul": "^1.6.0",
     "gulp-eslint": "^4.0.0",
     "gulp-mocha": "^4.3.1",
-    "mocha": "^3.4.2",
+    "mocha": "^5.2.0",
     "pg-native": "^2.0.1"
   }
 }
