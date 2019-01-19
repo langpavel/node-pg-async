@@ -1,7 +1,7 @@
-import {expect} from 'chai';
-import Pg, {sqlStr, literal, identifier} from '../src/index';
+import { expect } from 'chai';
+import Pg, { sqlStr, literal, identifier } from '../src/index';
 
-const pg = new Pg;
+const pg = new Pg();
 
 describe('pg-async exports', () => {
   it('pgAsync', () => expect(Pg).to.be.a('function'));

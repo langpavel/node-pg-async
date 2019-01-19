@@ -1,19 +1,21 @@
-import {expect} from 'chai';
+import { expect } from 'chai';
 import Pg from '../../src/index';
 import PgMock from './pgMock';
 
 describe('pg-async connect (with mock driver)', () => {
-
   let pg, pgInvalid;
 
   beforeEach(() => {
-    pg = new Pg(null, new PgMock);
-    pgInvalid = new Pg('INVALID', new PgMock);
+    pg = new Pg(null, new PgMock());
+    pgInvalid = new Pg('INVALID', new PgMock());
   });
 
   it('should fail if invalid connection conf', async () => {
     try {
-      await pgInvalid.connect('INVALID', async () => null);
+      await pgInvalid.connect(
+        'INVALID',
+        async () => null,
+      );
     } catch (err) {
       expect(pgInvalid.getDriver().connections).to.be.equal(0);
       expect(err).to.be.instanceOf(Error);
@@ -53,7 +55,7 @@ describe('pg-async connect (with mock driver)', () => {
         expect(pg.getDriver().connections).to.be.equal(1);
         throw new Error('CustomError');
       });
-    } catch(err) {
+    } catch (err) {
       expect(err.message).to.be.equal('CustomError');
     }
     expect(pg.getDriver().connections).to.be.equal(0);
@@ -61,7 +63,7 @@ describe('pg-async connect (with mock driver)', () => {
 
   describe('method', () => {
     it('query works', async () => {
-      await pg.connect(async (q) => {
+      await pg.connect(async q => {
         expect(pg.getDriver().connections).to.be.equal(1);
 
         const row = await q('ROW');
@@ -85,7 +87,7 @@ describe('pg-async connect (with mock driver)', () => {
     });
 
     it('query.query works', async () => {
-      await pg.connect(async (q) => {
+      await pg.connect(async q => {
         expect(pg.getDriver().connections).to.be.equal(1);
 
         const row = await q.query('ROW');
@@ -109,7 +111,7 @@ describe('pg-async connect (with mock driver)', () => {
     });
 
     it('query.rows works', async () => {
-      await pg.connect(async (q) => {
+      await pg.connect(async q => {
         expect(pg.getDriver().connections).to.be.equal(1);
 
         const row = await q.rows('ROW');
@@ -133,7 +135,7 @@ describe('pg-async connect (with mock driver)', () => {
     });
 
     it('query.row works', async () => {
-      await pg.connect(async (q) => {
+      await pg.connect(async q => {
         expect(pg.getDriver().connections).to.be.equal(1);
 
         const row = await q.row('ROW');
@@ -163,7 +165,7 @@ describe('pg-async connect (with mock driver)', () => {
     });
 
     it('query.value works', async () => {
-      await pg.connect(async (q) => {
+      await pg.connect(async q => {
         expect(pg.getDriver().connections).to.be.equal(1);
 
         const value = await q.value('VALUE');
@@ -210,7 +212,5 @@ describe('pg-async connect (with mock driver)', () => {
       expect(none).to.have.length(0);
       expect(pg.getDriver().connections).to.be.equal(0);
     });
-
   });
-
 });

@@ -1,4 +1,4 @@
-import {expect} from 'chai';
+import { expect } from 'chai';
 import Pg from '../../src/index';
 
 describe('pg shortcuts', () => {
@@ -9,7 +9,9 @@ describe('pg shortcuts', () => {
   });
 
   it('query works', async () => {
-    const result = await pg.query(pg.SQL`SELECT ${123}::int as int, ${'abc'}::text as text`);
+    const result = await pg.query(
+      pg.SQL`SELECT ${123}::int as int, ${'abc'}::text as text`,
+    );
     expect(result).to.be.a('object');
     expect(result.rows).to.be.a('array');
     expect(result.rows).lengthOf(1);
@@ -24,7 +26,9 @@ describe('pg shortcuts', () => {
   });
 
   it('queryArgs works', async () => {
-    const result = await pg.queryArgs(pg.SQL`SELECT ${123}::int as int, ${'abc'}::text as text`);
+    const result = await pg.queryArgs(
+      pg.SQL`SELECT ${123}::int as int, ${'abc'}::text as text`,
+    );
     expect(result).to.be.a('object');
     expect(result.rows).to.be.a('array');
     expect(result.rows).lengthOf(1);
@@ -37,5 +41,4 @@ describe('pg shortcuts', () => {
     expect(result.fields[0].name).equal('int');
     expect(result.fields[1].name).equal('text');
   });
-
 });
