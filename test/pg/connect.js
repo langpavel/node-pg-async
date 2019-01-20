@@ -9,7 +9,7 @@ const SELECT = {
 };
 
 testWithDriver('pg', require('pg'));
-testWithDriver('pg.native', require('pg').native);
+// testWithDriver('pg.native', require('pg').native);
 
 function testWithDriver(driverName, driver) {
   describe(`pg-async connect (with ${driverName} driver)`, () => {
