@@ -2,8 +2,6 @@ import babel from 'gulp-babel';
 import del from 'del';
 import eslint from 'gulp-eslint';
 import gulp from 'gulp';
-import istanbul from 'gulp-babel-istanbul';
-import mocha from 'gulp-mocha';
 
 const runEslint = () =>
   gulp
