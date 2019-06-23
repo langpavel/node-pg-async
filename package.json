@@ -58,6 +58,6 @@
     "gulp-babel": "^7.0.0",
     "gulp-eslint": "^4.0.0",
     "mocha": "^3.4.2",
-    "pg-native": "^2.0.1"
+    "pg-native": "^3.0.0"
   }
 }
