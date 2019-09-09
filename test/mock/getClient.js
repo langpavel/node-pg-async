@@ -1,14 +1,13 @@
-import {expect} from 'chai';
+import { expect } from 'chai';
 import Pg from '../../src/index';
-import PgMock, {Client} from './pgMock';
+import PgMock, { Client } from './pgMock';
 
 describe('pg-async getClient (with mock driver)', () => {
-
   let pg, pgInvalid;
 
   beforeEach(() => {
-    pg = new Pg(null, new PgMock);
-    pgInvalid = new Pg('INVALID', new PgMock);
+    pg = new Pg(null, new PgMock());
+    pgInvalid = new Pg('INVALID', new PgMock());
   });
 
   it('should fail if cannot connect', async () => {
@@ -20,9 +19,8 @@ describe('pg-async getClient (with mock driver)', () => {
   });
 
   it('should connect', async () => {
-    const {client, done} = await pg.getClient();
+    const { client, done } = await pg.getClient();
     expect(client).to.be.instanceOf(Client);
     expect(done).to.be.a('function');
   });
-
 });

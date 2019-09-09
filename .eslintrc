@@ -109,7 +109,10 @@
     // disallow use of void operator
     "no-void": 0,
     // disallow usage of configurable warning terms in comments: e.g. todo
-    "no-warning-comments": [0, { "terms": ["todo", "fixme", "xxx"], "location": "start" }],
+    "no-warning-comments": [
+      0,
+      { "terms": ["todo", "fixme", "xxx"], "location": "start" }
+    ],
     // disallow use of the with statement
     "no-with": 2,
     // require use of the second argument for parseInt()
@@ -177,13 +180,13 @@
     "import/export": 2,
     "import/named": 2,
     "import/namespace": 2,
-    "import/no-unresolved": [2, {"commonjs": true, "amd": true}],
-    "new-cap": [2, {"capIsNew": false, "newIsCap": true}],
+    "import/no-unresolved": [2, { "commonjs": true, "amd": true }],
+    "new-cap": [2, { "capIsNew": false, "newIsCap": true }],
     "no-console": 1,
     "no-shadow": 1,
     "no-unused-vars": 1,
     "no-use-before-define": [2, "nofunc"],
-    "object-curly-spacing": [2, "never"],
+    "object-curly-spacing": [2, "always"],
     "padded-blocks": 0,
     "spaced-comment": 1,
     "strict": [2, "never"],
@@ -193,17 +196,10 @@
     "require": false
   },
   "settings": {
-    "import/ignore": [
-      "node_modules",
-      "lib",
-      "\\.json$"
-    ],
+    "import/ignore": ["node_modules", "lib", "\\.json$"],
     "import/parser": "babel-eslint",
     "import/resolve": {
-      "extensions": [
-        ".js",
-        ".json"
-      ]
+      "extensions": [".js", ".json"]
     }
   }
 }

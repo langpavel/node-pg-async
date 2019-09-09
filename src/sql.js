@@ -1,11 +1,10 @@
-import {inspect} from 'util';
+import { inspect } from 'util';
 import pg from 'pg';
-import {prepareValue} from 'pg/lib/utils';
+import { prepareValue } from 'pg/lib/utils';
 
 let SQL; // eslint-disable-line prefer-const
 
 export class SqlFragment {
-
   // SQL`insert into $quote${tableName} $values${keyValue}`;
   constructor(templateParts, templateValues) {
     this._parts = [];
@@ -18,7 +17,7 @@ export class SqlFragment {
 
     let i = 0;
 
-    const addText = (str) => {
+    const addText = str => {
       currentFragment.push(str);
     };
 
@@ -29,7 +28,7 @@ export class SqlFragment {
       text.push(fragment);
     };
 
-    const addValue = (value) => {
+    const addValue = value => {
       flushText();
       this.values.push(value);
       text.push('$', argIndex++);
@@ -41,15 +40,14 @@ export class SqlFragment {
       if (typeof value === 'undefined')
         throw new Error(
           `Expected something, but got undefined. ` +
-          `Value after SQL fragment: ${text.join('')}${templateParts[i]}`);
+            `Value after SQL fragment: ${text.join('')}${templateParts[i]}`,
+        );
 
-      while (parts.length > 1)
-        value = SQL.transform(parts.pop(), value);
+      while (parts.length > 1) value = SQL.transform(parts.pop(), value);
 
       addText(parts[0]);
 
-      if (value && value.toSQL)
-        value = value.toSQL();
+      if (value && value.toSQL) value = value.toSQL();
 
       if (value instanceof SqlFragment) {
         const nestedValuesLength = value.values.length;
@@ -74,8 +72,7 @@ export class SqlFragment {
 
   // this is for log/debugging only
   toString() {
-    if (this._asString)
-      return this._asString;
+    if (this._asString) return this._asString;
 
     const text = [];
     const length = this.values.length;
@@ -92,11 +89,11 @@ export class SqlFragment {
   }
 }
 
-SQL = (parts, ...values) => { // eslint-disable-line prefer-const
+SQL = (parts, ...values) => {
+  // eslint-disable-line prefer-const
   // only one argument, called manually
   if (!Array.isArray(parts) && values.length === 0) {
-    if (parts instanceof SqlFragment)
-      return parts;
+    if (parts instanceof SqlFragment) return parts;
 
     parts = [parts];
   }
@@ -125,8 +122,7 @@ SQL.registerTransform = (...names) => {
 SQL.transform = (name, value) => {
   name = name.trim().toLowerCase();
   const transform = SQL._transforms[name];
-  if (!transform)
-    throw new Error(`Unknown transform: "${name}"`);
+  if (!transform) throw new Error(`Unknown transform: "${name}"`);
   return transform(value);
 };
 
@@ -142,28 +138,24 @@ export function sqlStr(str) {
 
 // returns quoted identifier
 export function identifier(name) {
-  if (!name)
-    throw new Error(`Expected nonempty string, got ${inspect(name)}`);
+  if (!name) throw new Error(`Expected nonempty string, got ${inspect(name)}`);
 
   return SQL(escapeIdentifier(name));
 }
 
 // returns quoted literal
 export function literal(value) {
-  if (value instanceof SqlFragment)
-    return value;
+  if (value instanceof SqlFragment) return value;
 
   if (typeof value === 'undefined')
     throw new Error(`Expected something, but got undefined.`);
 
-  if (value === null)
-    return SQL.NULL;
+  if (value === null) return SQL.NULL;
 
   if (value.toPostgres)
     return SQL(escapeLiteral(value.toPostgres(prepareValue)));
 
-  if (value.toSQL)
-    return SQL(value.toSQL());
+  if (value.toSQL) return SQL(value.toSQL());
 
   return SQL(escapeLiteral(value.toString()));
 }

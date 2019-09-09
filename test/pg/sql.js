@@ -1,5 +1,5 @@
-import {expect} from 'chai';
-import Pg, {SQL} from '../../src/index';
+import { expect } from 'chai';
+import Pg, { SQL } from '../../src/index';
 
 const tableName = 'pgAsyncTest';
 testWithDriver('pg', require('pg'));
@@ -7,7 +7,6 @@ testWithDriver('pg.native', require('pg').native);
 
 function testWithDriver(driverName, driver) {
   describe(`pg-async SQL tag (with ${driverName} driver)`, () => {
-
     let pg;
 
     before(async () => {
@@ -30,29 +29,34 @@ function testWithDriver(driverName, driver) {
     });
 
     it('returns string value', async () => {
-      const result = await pg.transaction((t) => t.value(SQL`SELECT ${'test'}::text`));
+      const result = await pg.transaction(t =>
+        t.value(SQL`SELECT ${'test'}::text`),
+      );
       expect(result).to.be.equal('test');
     });
 
     it('returns nested string value', async () => {
       const nested = SQL`${'test'}`;
-      const result = await pg.transaction((t) => t.value(SQL`SELECT ${nested}::text`));
+      const result = await pg.transaction(t =>
+        t.value(SQL`SELECT ${nested}::text`),
+      );
       expect(result).to.be.equal('test');
     });
 
     it('returns nested subquery value', async () => {
       const nested = SQL`(select ${'test'}::text)`;
-      const result = await pg.transaction((t) => t.value(SQL`SELECT ${nested}`));
+      const result = await pg.transaction(t => t.value(SQL`SELECT ${nested}`));
       expect(result).to.be.equal('test');
     });
 
     it('returns row', async () => {
-      const result = await pg.transaction((t) => t.row(t.SQL`
+      const result = await pg.transaction(t =>
+        t.row(t.SQL`
         SELECT ${'test'}::text as t, ${123}::smallint as i
-      `));
+      `),
+      );
       expect(result.t).to.be.equal('test');
       expect(result.i).to.be.equal(123);
     });
-
   });
 }

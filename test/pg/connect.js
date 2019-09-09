@@ -1,19 +1,18 @@
-import {expect} from 'chai';
+import { expect } from 'chai';
 import Pg from '../../src/index';
 
 const SELECT = {
   row: 'select 1 as id, 2 as value',
   rows: 'select oid, typname from pg_type limit 2',
   empty: 'select * from pg_type where false',
-  error: 'ERROR'
+  error: 'ERROR',
 };
 
 testWithDriver('pg', require('pg'));
-testWithDriver('pg.native', require('pg').native);
+// testWithDriver('pg.native', require('pg').native);
 
 function testWithDriver(driverName, driver) {
   describe(`pg-async connect (with ${driverName} driver)`, () => {
-
     let pg, pgInvalid;
 
     beforeEach(() => {
@@ -44,7 +43,7 @@ function testWithDriver(driverName, driver) {
     it('throws if client early ended', async () => {
       let throws = false;
       try {
-        await pg.connect(async (q) => {
+        await pg.connect(async q => {
           q('select pg_sleep(0.1)');
         });
       } catch (err) {
@@ -56,8 +55,7 @@ function testWithDriver(driverName, driver) {
 
     describe('method', () => {
       it('query works', async () => {
-        await pg.connect(async (q) => {
-
+        await pg.connect(async q => {
           const row = await q(SELECT.row);
           expect(row.rows).to.have.length(1);
 
@@ -75,13 +73,11 @@ function testWithDriver(driverName, driver) {
           } catch (err) {
             expect(err).to.be.instanceOf(Error);
           }
-
         });
       });
 
       it('query.query works', async () => {
-        await pg.connect(async (q) => {
-
+        await pg.connect(async q => {
           const row = await q.query(SELECT.row);
           expect(row.rows).to.have.length(1);
 
@@ -96,13 +92,11 @@ function testWithDriver(driverName, driver) {
           } catch (err) {
             expect(err).to.be.instanceOf(Error);
           }
-
         });
       });
 
       it('query.rows works', async () => {
-        await pg.connect(async (q) => {
-
+        await pg.connect(async q => {
           const row = await q.rows(SELECT.row);
           expect(row).to.have.length(1);
 
@@ -117,13 +111,16 @@ function testWithDriver(driverName, driver) {
           } catch (err) {
             expect(err).to.be.instanceOf(Error);
           }
-
         });
       });
 
       it('query.row works with arguments', async () => {
-        await pg.connect(async (q) => {
-          const result = await q.row('select $1::int as i, $2::text as t', 123, 'abc');
+        await pg.connect(async q => {
+          const result = await q.row(
+            'select $1::int as i, $2::text as t',
+            123,
+            'abc',
+          );
           expect(result).to.be.a('object');
           expect(result.i).equal(123);
           expect(result.t).equal('abc');
@@ -131,8 +128,11 @@ function testWithDriver(driverName, driver) {
       });
 
       it('query.rowArgs works with arguments', async () => {
-        await pg.connect(async (q) => {
-          const result = await q.rowArgs('select $1::int as i, $2::text as t', [123, 'abc']);
+        await pg.connect(async q => {
+          const result = await q.rowArgs('select $1::int as i, $2::text as t', [
+            123,
+            'abc',
+          ]);
           expect(result).to.be.a('object');
           expect(result.i).equal(123);
           expect(result.t).equal('abc');
@@ -140,8 +140,7 @@ function testWithDriver(driverName, driver) {
       });
 
       it('query.row works', async () => {
-        await pg.connect(async (q) => {
-
+        await pg.connect(async q => {
           const row = await q.row(SELECT.row);
           expect(row).to.be.a('object');
 
@@ -162,13 +161,11 @@ function testWithDriver(driverName, driver) {
           } catch (err) {
             expect(err).to.be.instanceOf(Error);
           }
-
         });
       });
 
       it('query.value works', async () => {
-        await pg.connect(async (q) => {
-
+        await pg.connect(async q => {
           const value = await q.value(`SELECT 'value'`);
           expect(value).to.be.equal('value');
 
@@ -195,7 +192,6 @@ function testWithDriver(driverName, driver) {
           } catch (err) {
             expect(err).to.be.instanceOf(Error);
           }
-
         });
       });
 
@@ -211,12 +207,10 @@ function testWithDriver(driverName, driver) {
       it('value ovverides custom query config correctly', async () => {
         const value = await pg.value({
           text: 'SELECT 123',
-          rowMode: 'object'
+          rowMode: 'object',
         });
         expect(value).equal(123);
       });
-
     });
-
   });
 }

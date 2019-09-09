@@ -1,4 +1,4 @@
-import {expect} from 'chai';
+import { expect } from 'chai';
 import Pg from '../src/index';
 
 describe('pg-async driver', () => {
@@ -12,8 +12,12 @@ describe('pg-async driver', () => {
   });
 
   it('should be `pg.native` module by if "native" string used', () => {
-    expect(new Pg(null, 'native').getDriver()).to.be.equal(require('pg').native);
-    expect(new Pg(null, 'pg.native').getDriver()).to.be.equal(require('pg').native);
+    expect(new Pg(null, 'native').getDriver()).to.be.equal(
+      require('pg').native,
+    );
+    expect(new Pg(null, 'pg.native').getDriver()).to.be.equal(
+      require('pg').native,
+    );
   });
 
   it('should throw if unknown driver used', () => {

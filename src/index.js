@@ -4,7 +4,7 @@ import debug from './debug';
 import makeAsyncApi from './makeAsyncApi';
 import SqlTag from './sql';
 
-export {sqlStr, literal, identifier} from './sql';
+export { sqlStr, literal, identifier } from './sql';
 export const SQL = SqlTag;
 
 function checkAsyncFunction(asyncFunc) {
@@ -60,10 +60,12 @@ export default class PgAsync {
   setDriver(driver) {
     if (typeof driver === 'string')
       switch (driver) {
-        case '': case 'pg':
+        case '':
+        case 'pg':
           driver = pgDriver;
           break;
-        case 'native': case 'pg.native':
+        case 'native':
+        case 'pg.native':
           driver = pgDriver.native;
           break;
         default:
@@ -98,7 +100,7 @@ export default class PgAsync {
           done: () => {
             debug('Client released');
             done();
-          }
+          },
         });
       });
     });
@@ -107,7 +109,7 @@ export default class PgAsync {
   async connect(asyncFunc) {
     checkAsyncFunction(asyncFunc);
 
-    const {client, done} = await this.getClient();
+    const { client, done } = await this.getClient();
     try {
       const api = makeAsyncApi(client);
       const result = await asyncFunc(api);
@@ -123,7 +125,7 @@ export default class PgAsync {
   async transaction(asyncFunc) {
     checkAsyncFunction(asyncFunc);
 
-    return await this.connect(async (client) => {
+    return await this.connect(async client => {
       client.checkSerialAccess = true;
       await client.startTransaction();
       try {

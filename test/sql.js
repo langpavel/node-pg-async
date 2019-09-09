@@ -1,5 +1,5 @@
-import {expect} from 'chai';
-import {SQL, literal} from '../src';
+import { expect } from 'chai';
+import { SQL, literal } from '../src';
 
 describe('pg-async SQL template tag', () => {
   it('parse without args', () => {
@@ -13,15 +13,15 @@ describe('pg-async SQL template tag', () => {
     const value1 = {
       toPostgres() {
         return 'raw text value';
-      }
+      },
     };
     const sql = SQL`SELECT ${value1}`;
     expect(sql.text).equal('SELECT $1');
     expect(sql.values.length).equal(1);
     expect(sql.values[0]).equal(value1);
-    expect(sql.toString()).equal('SELECT \'raw text value\'');
+    expect(sql.toString()).equal("SELECT 'raw text value'");
     // cover caching
-    expect(sql.toString()).equal('SELECT \'raw text value\'');
+    expect(sql.toString()).equal("SELECT 'raw text value'");
   });
 
   it('parse with null arg', () => {
@@ -46,9 +46,9 @@ describe('pg-async SQL template tag', () => {
   it('parse literal transform with string arg', () => {
     const value1 = 'ABC';
     const sql = SQL`SELECT $${value1}`;
-    expect(sql.text).equal('SELECT \'ABC\'');
+    expect(sql.text).equal("SELECT 'ABC'");
     expect(sql.values.length).equal(0);
-    expect(sql.toString()).equal('SELECT \'ABC\'');
+    expect(sql.toString()).equal("SELECT 'ABC'");
   });
 
   it('parse nested literal transform arg', () => {
@@ -57,14 +57,14 @@ describe('pg-async SQL template tag', () => {
     expect(sql.text).equal('SELECT $1');
     expect(sql.values.length).equal(1);
     expect(sql.values[0]).equal('ABC');
-    expect(sql.toString()).equal('SELECT \'ABC\'');
+    expect(sql.toString()).equal("SELECT 'ABC'");
   });
 
   it('parse with SQL formater arg', () => {
     const value1 = {
       toSQL() {
         return SQL`123.45::numeric(15,2)`;
-      }
+      },
     };
     const sql = SQL`SELECT ${value1}`;
     expect(sql.text).equal('SELECT 123.45::numeric(15,2)');
@@ -82,7 +82,9 @@ describe('pg-async SQL template tag', () => {
     expect(userIdSql.values.length).equal(1);
     expect(userIdSql.values[0]).equal(login);
 
-    expect(auditSql.text).equal('insert into audit (uder_id, ip) values ((select id from user where login = $1), $2)');
+    expect(auditSql.text).equal(
+      'insert into audit (uder_id, ip) values ((select id from user where login = $1), $2)',
+    );
     expect(auditSql.values.length).equal(2);
     expect(auditSql.values[0]).equal(login);
     expect(auditSql.values[1]).equal(ip);
@@ -127,14 +129,15 @@ describe('pg-async SQL template tag', () => {
 
   it('SQL literal custom SQL transform', () => {
     const val = {
-      toSQL() { return 'DEFAULT'; }
+      toSQL() {
+        return 'DEFAULT';
+      },
     };
     const sql = SQL`insert... ($${val})`;
     expect(sql.text).equal('insert... (DEFAULT)');
     expect(sql.values.length).equal(0);
     expect(sql.toString()).equal('insert... (DEFAULT)');
   });
-
 });
 
 describe('pg-async SQL errors', () => {
@@ -152,7 +155,7 @@ describe('pg-async SQL errors', () => {
 
   it('throws on re-registering transform', () => {
     expect(() => {
-      SQL.registerTransform('Id', (val) => val);
+      SQL.registerTransform('Id', val => val);
     }).throws(Error);
   });
 
@@ -164,7 +167,9 @@ describe('pg-async SQL errors', () => {
 
   it('throws on passing undefined', () => {
     const data = {};
-    expect(() => SQL`update mytable set myvalue = ${data.mistyped}`).throws(Error);
+    expect(() => SQL`update mytable set myvalue = ${data.mistyped}`).throws(
+      Error,
+    );
   });
 
   it('throws on transforming undefined', () => {
@@ -173,5 +178,4 @@ describe('pg-async SQL errors', () => {
     expect(() => SQL`SELECT * FROM $${undef}`).throws(Error);
     expect(() => literal(undef)).throws(Error);
   });
-
 });
