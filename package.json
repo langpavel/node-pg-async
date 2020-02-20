@@ -38,7 +38,7 @@
   "dependencies": {
     "bluebird": "^3.5.0",
     "debug": "^4.0.0",
-    "pg": "^7.0.2"
+    "pg": "^7.18.2"
   },
   "devDependencies": {
     "babel": "^6.23.0",
